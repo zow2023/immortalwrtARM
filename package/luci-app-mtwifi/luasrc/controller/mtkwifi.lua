@@ -809,14 +809,14 @@ function apcli_disconnect(dev, vif)
     mtkwifi.save_profile(cfgs, profiles[devname])
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("ifconfig "..vifname.." down")
-    os.execute("uci set network.wan.ifname=eth1")
+    os.execute("uci set network.wan.ifname=eth0.2")
     os.execute("uci commit")
     wifi1name="ra0"
     wifi2name="rai0"
     os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..wifi1name.."\\\"}\"")
     os.execute("ubus call network.interface.lan add_device \"{\\\"name\\\":\\\""..wifi2name.."\\\"}\"")
     os.execute("ubus call network.interface.wan remove_device \"{\\\"name\\\":\\\""..vifname.."\\\"}\"")
-    wanname="eth1"
+    wanname="eth0.2"
     os.execute("ubus call network.interface.wan add_device \"{\\\"name\\\":\\\""..wanname.."\\\"}\"") 
     os.execute("ifdown wan")
     os.execute("ifup wan") 

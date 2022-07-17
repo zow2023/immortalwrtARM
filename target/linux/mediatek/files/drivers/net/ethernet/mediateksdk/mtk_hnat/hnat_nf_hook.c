@@ -259,10 +259,6 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 			hnat_priv->g_wandev = dev_get_by_name(&init_net, hnat_priv->wan);
 
 		break;
-	case MTK_FE_RESET_NAT_DONE:
-		pr_info("[%s] HNAT driver starts to do warm init !\n", __func__);
-		hnat_warm_init();
-		break;
 	default:
 		break;
 	}
