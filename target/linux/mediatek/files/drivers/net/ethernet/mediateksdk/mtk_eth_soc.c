@@ -1023,7 +1023,7 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 
 	nr_frags = skb_shinfo(skb)->nr_frags;
 
-        qid = mac->id;
+        qid = skb->mark & (MTK_QDMA_TX_MASK);
 
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 	if(!qid && mac->id)
