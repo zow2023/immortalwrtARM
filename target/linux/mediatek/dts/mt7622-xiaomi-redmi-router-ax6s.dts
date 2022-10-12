@@ -216,7 +216,7 @@
 
 	mediatek,bmt-v2;
 	mediatek,bmt-table-size = <0x1000>;
-	mediatek,bmt-remap-range = <0x0 0x6c0000>;
+	mediatek,bmt-remap-range = <0x0 0xcc0000>;
 
 	partitions {
 		compatible = "fixed-partitions";
@@ -282,7 +282,6 @@
 		 */
 		partition@2c0000 {
  			label = "kernel";
- 			compatible = "denx,fit";
  			reg = <0x2c0000 0xA00000>;
  		};
 
