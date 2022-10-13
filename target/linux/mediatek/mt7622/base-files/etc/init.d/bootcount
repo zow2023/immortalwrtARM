@@ -7,7 +7,9 @@ boot() {
 	ifconfig rai0 up
 	/etc/init.d/apcli.sh start
 	mtkwifi reload
-	echo "3" > "/sys/class/net/rai0/queues/rx-0/rps_cpus"
+	echo "2" > "/proc/irq/20/smp_affinity"
+	echo "3" > "/sys/class/net/eth0/queues/rx-0/rps_cpus"
+	echo "2" > "/sys/class/net/ra0/queues/rx-0/rps_cpus"
 	echo "2" > "/sys/class/net/rai0/queues/rx-0/rps_cpus"
 	echo "2" > "/sys/class/net/apcli0/queues/rx-0/rps_cpus"
 	echo "2" > "/sys/class/net/apclii0/queues/rx-0/rps_cpus"
