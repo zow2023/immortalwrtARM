@@ -658,10 +658,10 @@ choice
 		depends on ! MTK_FIRST_IF_NONE
 		
 		config MTK_FIRST_IF_IPAILNA
-		bool "iPAiLNA"		
+		bool "ePAeLNA"		
 		
 		config MTK_FIRST_IF_EPAELNA
-		bool "ePAeLNA"
+		bool "iPAiLNA"
 		
 		config MTK_FIRST_IF_IPAELNA
 		bool "iPAeLNA"
@@ -673,10 +673,10 @@ choice
 		depends on ! MTK_SECOND_IF_NONE
 		
 		config MTK_SECOND_IF_IPAILNA
-		bool "iPAiLNA"		
+		bool "ePAeLNA"		
 		
 		config MTK_SECOND_IF_EPAELNA
-		bool "ePAeLNA"
+		bool "iPAiLNA"
 		
 		config MTK_SECOND_IF_IPAELNA
 		bool "iPAeLNA"
