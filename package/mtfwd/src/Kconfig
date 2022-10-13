@@ -1,0 +1,6 @@
+config MTFWD_SUPPORT
+	tristate "MT Forward support."
+	default m
+	---help---
+		if you want multi-backhaul work, you must enable this option.
+
