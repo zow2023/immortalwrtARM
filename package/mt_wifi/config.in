@@ -286,12 +286,12 @@ config MTK_BRCM_256QAM_SUPPORT
 	bool "BRCM 2.4G 256QAM support"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_G_BAND_256QAM_SUPPORT
-	default y
+	default n
 
 config MTK_VHT_TXBF_2G_EPIGRAM_IE_SUPPORT
     bool "BRCM 2.4G VHT Sounding support"
 	depends on MTK_WIFI_DRIVER
-	default y
+	default n
 		
 config MTK_TPC_SUPPORT
 	bool "802.11h TPC Support"
@@ -318,7 +318,7 @@ config MTK_BACKGROUND_SCAN_SUPPORT
 config MTK_SMART_CARRIER_SENSE_SUPPORT
 	bool "Smart Carrier Sense Support"
 	depends on MTK_WIFI_DRIVER
-	default y
+	default n
 
 config MTK_THERMAL_PROTECT_SUPPORT
         bool "THERMAL PROTECT SUPPORT"
@@ -328,7 +328,7 @@ config MTK_THERMAL_PROTECT_SUPPORT
 config MTK_SCS_FW_OFFLOAD
         bool "SCS FW OFFLOAD Support"
         depends on MTK_WIFI_DRIVER && MTK_SMART_CARRIER_SENSE_SUPPORT
-        default y
+        default n
 
 config MTK_MT_DFS_SUPPORT
 	bool "Dynamic Frequency Selection Support"
@@ -339,7 +339,7 @@ config MTK_OFFCHANNEL_SCAN_FEATURE
 	bool "Channel Quality Monitor"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_MT_AP_SUPPORT
-	default n
+	default y
 
 #config WFA_VHT_R2_PF
 #	bool "WFA VHT R2 Plugfest"
@@ -445,7 +445,7 @@ config MTK_IGMP_SNOOP_SUPPORT
 	bool "IGMP snooping"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_MT_AP_SUPPORT
-	default y
+	default n
 
 config MTK_MEMORY_SHRINK
 	bool "Memory Shrink"
@@ -582,7 +582,7 @@ config MTK_OCE_SUPPORT
 	depends on MTK_MT_AP_SUPPORT
 	depends on MTK_MBO_SUPPORT
 	depends on MTK_CHIP_MT7915
-	default y
+	default n
 
 config MTK_MAP_SUPPORT
         bool "MAP Support"
@@ -641,7 +641,7 @@ config MTK_FQ_SCH_SUPPORT
 config MTK_CTXD_MEM_CPY_SUPPORT
 	bool "CTXD(sw mode) support"
 	depends on MTK_WIFI_DRIVER
-	default y
+	default n
 
 config MTK_CTXD_SCATTER_AND_GATHER_SUPPORT
         bool "CTXD(hw mode) support"
@@ -864,13 +864,13 @@ config MTK_WIFI_EAP_FEATURE
 	bool "EAP Feature"
 	depends on MTK_WIFI_DRIVER
 	depends on MTK_MT_AP_SUPPORT
-	default y
+	default n
 
 #VLAN
 config MTK_VLAN_SUPPORT
 	bool "VLAN Support"
 	depends on MTK_WIFI_EAP_FEATURE
-	default n
+	default y
 
 #TxRx Statistic
 config MTK_TXRX_STAT_SUPPORT
@@ -1011,7 +1011,7 @@ config MTK_CON_WPS_SUPPORT
 config MTK_MCAST_RATE_SPECIFIC
 	bool "User specific tx rate of mcast pkt"
 	depends on MTK_MT_AP_SUPPORT
-	default y
+	default n
 
 #config EXT_BUILD_CHANNEL_LIST
 #	bool "Extension Channel List"
@@ -1034,11 +1034,11 @@ config MTK_VOW_SUPPORT
 config MTK_BAND_STEERING
 	bool "Band Steering"
 	depends on MTK_MT_AP_SUPPORT
-	default y
+	default n
 
 config MTK_LED_CONTROL_SUPPORT
 	bool "LED Control Support"
-	default y
+	default n
 
 config MTK_WLAN_HOOK
        bool "WLAN hook Support"
@@ -1053,7 +1053,7 @@ config MTK_RADIUS_ACCOUNTING_SUPPORT
 config MTK_GREENAP_SUPPORT
 	bool "GreenAP Support"
 	depends on MTK_MT_AP_SUPPORT
-	default n
+	default y
 
 config MTK_VENDOR_FEATURE11_SUPPORT
         bool "Vendor11 Feature Enable"
@@ -1104,7 +1104,7 @@ config MTK_INTERWORKING
 
 config MTK_LINUX_NET_TXQ_SUPPORT
 	bool "NET TX Queue Support"
-	default y
+	default n
 
 config MTK_HWIFI_SUPPORT
 	bool "hardware wifi abstraction layer support"
@@ -1129,7 +1129,7 @@ config  MTK_OWE_SUPPORT
 config  MTK_SINGLE_SKU
         bool "Single SKU Support"
         depends on MTK_MT_AP_SUPPORT
-        default y
+        default n
 
 config MTK_PROFILING_SUPPORT
         bool "WIFI Profiling Support"
