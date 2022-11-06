@@ -236,7 +236,7 @@ struct cb_rx_desc_info4 {
 #define FOE_MAGIC_FASTPATH	    0x77
 #define FOE_MAGIC_L2TPPATH	    0x78
 #else
-#define FOE_INFO_LEN		    (6 + WIFI_INFO_LEN)
+#define FOE_INFO_LEN		    (10 + WIFI_INFO_LEN)
 #endif
 
 #define FOE_MAGIC_PCI		    0x73

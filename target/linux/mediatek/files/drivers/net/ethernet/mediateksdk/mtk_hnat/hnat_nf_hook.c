@@ -619,7 +619,8 @@ static unsigned int is_ppe_support_type(struct sk_buff *skb)
 	struct iphdr _iphdr;
 
 	eth = eth_hdr(skb);
-	if (is_broadcast_ether_addr(eth->h_dest))
+	if (!IS_SPACE_AVAILABLE_HEAD(skb) ||
+ 	    is_broadcast_ether_addr(eth->h_dest))
 		return 0;
 
 	switch (ntohs(skb->protocol)) {
