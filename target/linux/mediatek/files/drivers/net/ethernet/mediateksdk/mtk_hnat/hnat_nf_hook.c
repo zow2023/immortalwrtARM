@@ -535,17 +535,13 @@ static inline void hnat_set_iif(const struct nf_hook_state *state,
 		skb_hnat_iface(skb) = FOE_MAGIC_EXT;
 	} else if (IS_WAN(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_WAN;
+	} else if (state->in->netdev_ops->ndo_hnat_check) {
+		skb_hnat_iface(skb) = FOE_MAGIC_GE_VIRTUAL;
 	} else if (!IS_BR(state->in)) {
-		if (state->in->netdev_ops->ndo_hnat_check) {
-			skb_hnat_iface(skb) = FOE_MAGIC_GE_VIRTUAL;
-		} else {
-			skb_hnat_iface(skb) = FOE_INVALID;
+		skb_hnat_iface(skb) = FOE_INVALID;
 
-			if (is_magic_tag_valid(skb) &&
-			    IS_SPACE_AVAILABLE_HEAD(skb))
-				memset(skb_hnat_info(skb), 0, FOE_INFO_LEN);
-		}
-
+		if (is_magic_tag_valid(skb) && IS_SPACE_AVAILABLE_HEAD(skb))
+			memset(skb_hnat_info(skb), 0, FOE_INFO_LEN);
 	}
 }
 
@@ -602,7 +598,6 @@ unsigned int do_hnat_mape_w2l_fast(struct sk_buff *skb, const struct net_device 
 		set_to_ppe(skb);
 
 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), in->ifindex & VLAN_VID_MASK);
-
 		if (!hnat_priv->g_ppdev)
 			hnat_priv->g_ppdev = dev_get_by_name(&init_net, hnat_priv->ppd);
 
@@ -624,10 +619,8 @@ static unsigned int is_ppe_support_type(struct sk_buff *skb)
 	struct iphdr _iphdr;
 
 	eth = eth_hdr(skb);
-	if (!IS_SPACE_AVAILABLE_HEAD(skb) ||
-	    is_broadcast_ether_addr(eth->h_dest))
+	if (is_broadcast_ether_addr(eth->h_dest))
 		return 0;
-
 
 	switch (ntohs(skb->protocol)) {
 	case ETH_P_IP:
@@ -650,8 +643,6 @@ static unsigned int is_ppe_support_type(struct sk_buff *skb)
 		} else if (ip6h->nexthdr == NEXTHDR_IPIP) {
 			iph = skb_header_pointer(skb, IPV6_HDR_LEN,
 						 sizeof(_iphdr), &_iphdr);
-			if (unlikely(!iph))
-				return 0;
 
 			if ((iph->protocol == IPPROTO_TCP) ||
 			    (iph->protocol == IPPROTO_UDP)) {
@@ -994,17 +985,17 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 	entry.bfib1.psn = (hw_path->flags & HNAT_PATH_PPPOE) ? 1 : 0;
 	entry.bfib1.vlan_layer += (hw_path->flags & HNAT_PATH_VLAN) ? 1 : 0;
 	entry.bfib1.vpm = (entry.bfib1.vlan_layer) ? 1 : 0;
-	entry.bfib1.time_stamp = readl((hnat_priv->fe_base + 0x0010)) & (0x7FFF);
-	
+	entry.bfib1.time_stamp = readl((hnat_priv->fe_base + 0x0010)) & (0xFFFF);
+	entry.bfib1.ttl = 1;
 	entry.bfib1.cah = 1;
-
+	entry.bfib1.ka = 1;
 	switch (entry.bfib1.pkt_type) {
 	case IPV4_HNAPT:
 	case IPV4_HNAT:
-		if (hnat_priv->data->mcast && is_multicast_ether_addr(&eth->h_dest[0])) {
+		if (is_multicast_ether_addr(&eth->h_dest[0])) {
 			entry.ipv4_hnapt.iblk2.mcast = 1;
-			if (hnat_priv->data->version == MTK_HNAT_V3)
-				{entry.bfib1.sta = 1;
+			if (hnat_priv->data->version == MTK_HNAT_V3){
+				entry.bfib1.sta = 1;
 				entry.ipv4_hnapt.m_timestamp = foe_timestamp(hnat_priv);}
 		} else {
 			entry.ipv4_hnapt.iblk2.mcast = 0;
@@ -1016,10 +1007,10 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 	case IPV6_6RD:
 	case IPV6_5T_ROUTE:
 	case IPV6_3T_ROUTE:
-		if (hnat_priv->data->mcast && is_multicast_ether_addr(&eth->h_dest[0])) {
+		if (is_multicast_ether_addr(&eth->h_dest[0])) {
 			entry.ipv6_5t_route.iblk2.mcast = 1;
-			if (hnat_priv->data->version == MTK_HNAT_V3)
-				{entry.bfib1.sta = 1;
+			if (hnat_priv->data->version == MTK_HNAT_V3){
+				entry.bfib1.sta = 1;
 				entry.ipv4_hnapt.m_timestamp = foe_timestamp(hnat_priv);}
 		} else {
 			entry.ipv6_5t_route.iblk2.mcast = 0;
@@ -1054,7 +1045,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	int udp = 0;
 	u32 qid = 0;
 	int mape = 0;
-	
+
 	if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP)
 		/* point to ethernet header for DS-Lite and MapE */
 		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
@@ -1066,7 +1057,6 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			return 0;
 	}
 	entry.bfib1.pkt_type = foe->udib1.pkt_type; /* Get packte type state*/
-	entry.bfib1.state = foe->udib1.state;
 	switch (ntohs(eth->h_proto)) {
 	case ETH_P_IP:
 		iph = ip_hdr(skb);
@@ -1140,8 +1130,6 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				pptr = skb_header_pointer(skb, iph->ihl * 4,
 							  sizeof(_ports),
 							  &_ports);
-				if (unlikely(!pptr))
-					return -1;
 				entry.ipv4_hnapt.new_sport = ntohs(pptr->src);
 				entry.ipv4_hnapt.new_dport = ntohs(pptr->dst);
 			}
@@ -1207,7 +1195,6 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			entry.ipv6_3t_route.ipv6_dip3 =
 				foe->ipv6_3t_route.ipv6_dip3;
 
-
 			if (IS_IPV6_5T_ROUTE(foe) || IS_IPV6_6RD(foe)) {
 				entry.ipv6_5t_route.sport =
 					foe->ipv6_5t_route.sport;
@@ -1265,9 +1252,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 					foe->ipv4_hnapt.iblk2.dscp;
 				if (hnat_priv->data->per_flow_accounting)
 					entry.ipv4_hnapt.iblk2.mibf = 1;
-				if (IS_GMAC1_MODE)
-					entry.ipv4_hnapt.vlan1 = 1;
-				else
+
 				entry.ipv4_hnapt.vlan1 = hw_path->vlan_id;
 
 				entry.ipv4_hnapt.sip = foe->ipv4_hnapt.sip;
@@ -1365,8 +1350,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		}
 	} else if (IS_EXT(dev) && (FROM_GE_PPD(skb) || FROM_GE_LAN(skb) ||
 		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_EXT(skb))) {
-
-		if (!hnat_priv->data->whnat && IS_GMAC1_MODE) {
+		if ((hnat_priv->data->version != MTK_HNAT_V2) && IS_GMAC1_MODE) {
 			entry.bfib1.vpm = 1;
 			entry.bfib1.vlan_layer = 1;
 
@@ -1394,7 +1378,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		return 0;
 	}
 
-	qid = 0;
+	qid = skb->mark & (MTK_QDMA_TX_MASK);
 
 	if (IS_IPV4_GRP(foe)) {
 		entry.ipv4_hnapt.iblk2.dp = gmac;
@@ -1448,31 +1432,28 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 #endif
 	}
 
+	memcpy(foe, &entry, sizeof(entry));
+	/*reset statistic for this entry*/
+	if (hnat_priv->data->per_flow_accounting)
+		memset(&hnat_priv->acct[skb_hnat_entry(skb)], 0,
+		       sizeof(struct mib_entry));
+
+	wmb();
 	/* The INFO2.port_mg and 2nd VLAN ID fields of PPE entry are redefined
 	 * by Wi-Fi whnat engine. These data and INFO2.dp will be updated and
 	 * the entry is set to BIND state in mtk_sw_nat_hook_tx().
 	 */
-	if (!whnat) {
-		entry.bfib1.ttl = 1;
- 		entry.bfib1.state = BIND;
-	}
-
-	wmb();
-	memcpy(foe, &entry, sizeof(entry));
-	/*reset statistic for this entry*/
-	if (hnat_priv->data->per_flow_accounting)
-		memset(&hnat_priv->acct[skb_hnat_entry(skb)],
-		       0, sizeof(struct mib_entry));	
+	if (!whnat)
+		foe->bfib1.state = BIND;
 	skb_hnat_filled(skb) = HNAT_INFO_FILLED;
 	return 0;
-
 }
 
 int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 {
 	struct foe_entry *entry;
 	struct ethhdr *eth;
-	struct hnat_bind_info_blk bfib1_tx;
+
 	if (skb_hnat_alg(skb) || !is_hnat_info_filled(skb) || !is_magic_tag_valid(skb) || !IS_SPACE_AVAILABLE_HEAD(skb))
 		return NF_ACCEPT;
 
@@ -1482,15 +1463,9 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		skb_hnat_wdma_id(skb), skb_hnat_bss_id(skb),
 		skb_hnat_wc_id(skb), skb_hnat_rx_id(skb));
 
-	if (gmac_no != NR_WHNAT_WDMA_PORT)
-		return NF_ACCEPT;
-
 	if (!skb_hnat_is_hashed(skb))
 		return NF_ACCEPT;
 
-	if (skb_hnat_entry(skb) >= hnat_priv->foe_etry_num)
-		return NF_ACCEPT;
-		
 	entry = &hnat_priv->foe_table_cpu[skb_hnat_entry(skb)];
 	if (entry_hnat_is_bound(entry))
 		return NF_ACCEPT;
@@ -1499,22 +1474,16 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		return NF_ACCEPT;
 
 	eth = eth_hdr(skb);
-	memcpy(&bfib1_tx, &entry->bfib1, sizeof(entry->bfib1));
-	
-	if (!hnat_priv->data->mcast) {
-		if (is_multicast_ether_addr(eth->h_dest))
- 			return NF_ACCEPT;
-
-		if (IS_IPV4_GRP(entry))
-			entry->ipv4_hnapt.iblk2.mcast = 0;
-		else
-			entry->ipv6_5t_route.iblk2.mcast = 0;
- 	}
+	if (is_multicast_ether_addr(eth->h_dest)) {
+		/*not bind multicast if PPE mcast not enable*/
+		if (!hnat_priv->pmcast)
+			return NF_ACCEPT;
+	}
 
 	/* Some mt_wifi virtual interfaces, such as apcli,
 	 * will change the smac for specail purpose.
 	 */
-	switch (bfib1_tx.pkt_type) {
+	switch (entry->bfib1.pkt_type) {
 	case IPV4_HNAPT:
 	case IPV4_HNAT:
 		entry->ipv4_hnapt.smac_hi = swab32(*((u32 *)eth->h_source));
@@ -1529,8 +1498,6 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		break;
 	}
 
-	bfib1_tx.vpm = 0;
-	bfib1_tx.vlan_layer = 0;
 	/* MT7622 wifi hw_nat not support QoS */
 	if (IS_IPV4_GRP(entry))
 		entry->ipv4_hnapt.iblk2w.fqos = 0;
@@ -1555,8 +1522,8 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		}
 	} else {
 		if (IS_GMAC1_MODE && !hnat_dsa_is_enable(hnat_priv)) {
-			bfib1_tx.vpm = 1;
-			bfib1_tx.vlan_layer = 1;
+			entry->bfib1.vpm = 1;
+			entry->bfib1.vlan_layer = 1;
 
 			if (FROM_GE_LAN(skb)) {
 				if (IS_IPV4_GRP(entry))
@@ -1573,8 +1540,8 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 
 #if defined(CONFIG_NET_MEDIATEK_HW_QOS)
 		if (FROM_GE_LAN(skb) || FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb)) {
-			bfib1_tx.vpm = 0;
-			bfib1_tx.vlan_layer = 1;
+			entry->bfib1.vpm = 0;
+			entry->bfib1.vlan_layer = 1;
 
 			if (IS_IPV4_GRP(entry)) {
 				entry->ipv4_hnapt.etype = htons(HQOS_MAGIC_TAG);
@@ -1594,10 +1561,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	else
 		entry->ipv6_5t_route.iblk2w.dp = gmac_no;
 
-	bfib1_tx.ttl = 1;
-	bfib1_tx.state = BIND;
-	wmb();
-	memcpy(&entry->bfib1, &bfib1_tx, sizeof(bfib1_tx));
+	entry->bfib1.state = BIND;
 
 	return NF_ACCEPT;
 }
@@ -1633,7 +1597,7 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 			if (!ext_entry)
 				return;
 
-			strncpy(ext_entry->name, dev->name, IFNAMSIZ -1);
+			strncpy(ext_entry->name, dev->name, IFNAMSIZ);
 			dev_hold(dev);
 			ext_entry->dev = dev;
 			ext_if_add(ext_entry);
@@ -1810,8 +1774,6 @@ mtk_hnat_ipv6_nf_local_out(void *priv, struct sk_buff *skb,
 			if (mape_toggle) {
 				iph = skb_header_pointer(skb, IPV6_HDR_LEN,
 							 sizeof(_iphdr), &_iphdr);
-				if (unlikely(!iph))
-					return NF_ACCEPT;
 				switch (iph->protocol) {
 				case IPPROTO_UDP:
 					udp = 1;
@@ -1821,16 +1783,12 @@ mtk_hnat_ipv6_nf_local_out(void *priv, struct sk_buff *skb,
 				default:
 					return NF_ACCEPT;
 				}
-				
-				pptr = skb_header_pointer(skb, IPV6_HDR_LEN + iph->ihl * 4,
-							  sizeof(_ports), &_ports);
-				if (unlikely(!pptr))
-                                        return NF_ACCEPT;
-
-				entry->bfib1.udp = udp;
 				entry->ipv4_hnapt.iblk2.dscp = iph->tos;
+				entry->ipv4_hnapt.bfib1.udp = udp;
 				entry->ipv4_hnapt.new_sip = ntohl(iph->saddr);
 				entry->ipv4_hnapt.new_dip = ntohl(iph->daddr);
+				pptr = skb_header_pointer(skb, IPV6_HDR_LEN + iph->ihl * 4,
+							  sizeof(_ports), &_ports);
 				entry->ipv4_hnapt.new_sport = ntohs(pptr->src);
 				entry->ipv4_hnapt.new_dport = ntohs(pptr->dst);
 			} else {

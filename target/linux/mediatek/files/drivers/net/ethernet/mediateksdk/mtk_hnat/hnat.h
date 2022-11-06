@@ -125,7 +125,7 @@
 #define HASH_MODE (0x3 << 14) /* RW */
 #define SCAN_MODE (0x3 << 16) /* RW */
 #define XMODE (0x3 << 18) /* RW */
-#define TICK_SEL (0x1 << 24) /* RW */
+
 /*PPE_CAH_CTRL mask*/
 #define CAH_EN (0x1 << 0) /* RW */
 #define CAH_X_MODE (0x1 << 9) /* RW */
@@ -612,7 +612,6 @@ enum FoeIpAct {
 #define BIT_FUC_FOE BIT(2)
 #define BIT_FMC_FOE BIT(1)
 #define BIT_FBC_FOE BIT(0)
-#define BIT_TCP_IP4F_NAT_EN BIT(6)
 #define BIT_UDP_IP4F_NAT_EN BIT(7) /*Enable IPv4 fragment + UDP packet NAT*/
 #define BIT_IPV6_3T_ROUTE_EN BIT(8)
 #define BIT_IPV6_5T_ROUTE_EN BIT(9)
@@ -761,11 +760,13 @@ enum FoeIpAct {
 extern struct mtk_hnat *hnat_priv;
 
 #if defined(CONFIG_NET_DSA_MT7530)
+
 static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
 {
 	return (priv->wan_dsa_port != NONE_DSA_PORT);
 }
 #else
+
 static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
 {
 	return false;
@@ -773,7 +774,7 @@ static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
 #endif
 
 void hnat_deinit_debugfs(struct mtk_hnat *h);
-int hnat_init_debugfs(struct mtk_hnat *h);
+int  hnat_init_debugfs(struct mtk_hnat *h);
 int hnat_register_nf_hooks(void);
 void hnat_unregister_nf_hooks(void);
 int whnat_adjust_nf_hooks(void);

@@ -11,6 +11,7 @@
  *   Copyright (C) 2016-2017 John Crispin <blogic@openwrt.org>
  */
 
+
 #include <linux/dma-mapping.h>
 #include <linux/delay.h>
 #include <linux/if.h>
@@ -47,29 +48,7 @@ void hnat_cache_ebl(int enable)
 	cr_set_field(hnat_priv->ppe_base + PPE_CAH_CTRL, CAH_EN, enable);
 }
 
-static void hnat_reset_timestamp(struct timer_list *t)
-{
-	struct foe_entry *entry;
-	int hash_index;
 
-	hnat_cache_ebl(0);
-	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, TCP_AGE, 0);
-	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, UDP_AGE, 0);
-	writel(0, hnat_priv->fe_base + 0x0010);
-
-	for (hash_index = 0; hash_index < hnat_priv->foe_etry_num; hash_index++) {
-		entry = hnat_priv->foe_table_cpu + hash_index;
-		if (entry->bfib1.state == BIND)
-			entry->bfib1.time_stamp =
-				readl(hnat_priv->fe_base + 0x0010) & (0xFFFF);
-	}
-
-	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, TCP_AGE, 1);
-	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, UDP_AGE, 1);
-	hnat_cache_ebl(1);
-
-	mod_timer(&hnat_priv->hnat_reset_timestamp_timer, jiffies + 14400 * HZ);
-}
 
 static void cr_set_bits(void __iomem *reg, u32 bs)
 {
@@ -199,7 +178,7 @@ static int hnat_start(void)
 
 	/* enable FOE */
 	cr_set_bits(hnat_priv->ppe_base + PPE_FLOW_CFG,
-		    BIT_TCP_IP4F_NAT_EN  | BIT_IPV4_NAT_EN | BIT_IPV4_NAPT_EN |
+		    BIT_IPV4_NAT_EN | BIT_IPV4_NAPT_EN |
 		    BIT_IPV4_NAT_FRAG_EN | BIT_IPV4_HASH_GREK |
 		    BIT_IPV4_DSL_EN | BIT_IPV6_6RD_EN |
 		    BIT_IPV6_3T_ROUTE_EN | BIT_IPV6_5T_ROUTE_EN);
@@ -217,23 +196,13 @@ static int hnat_start(void)
 	cr_set_field(hnat_priv->ppe_base + PPE_BND_AGE_1, FIN_DLTA, 1);
 	cr_set_field(hnat_priv->ppe_base + PPE_BND_AGE_1, TCP_DLTA, 7);
 
-
 	/* setup FOE ka */
-	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, KA_CFG, 0);
-	cr_set_field(hnat_priv->ppe_base + PPE_BIND_LMT_1, NTU_KA, 0);
-	cr_set_field(hnat_priv->ppe_base + PPE_KA, KA_T, 0);
-	cr_set_field(hnat_priv->ppe_base + PPE_KA, TCP_KA, 0);
-	cr_set_field(hnat_priv->ppe_base + PPE_KA, UDP_KA, 0);
-	mdelay(10);
-
 	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, SCAN_MODE, 2);
 	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, KA_CFG, 3);
-	cr_set_field(hnat_priv->ppe_base + PPE_TB_CFG, TICK_SEL, 0);
 	cr_set_field(hnat_priv->ppe_base + PPE_KA, KA_T, 1);
 	cr_set_field(hnat_priv->ppe_base + PPE_KA, TCP_KA, 1);
 	cr_set_field(hnat_priv->ppe_base + PPE_KA, UDP_KA, 1);
 	cr_set_field(hnat_priv->ppe_base + PPE_BIND_LMT_1, NTU_KA, 1);
-
 
 	/* setup FOE rate limit */
 	cr_set_field(hnat_priv->ppe_base + PPE_BIND_LMT_0, QURT_LMT, 16383);
@@ -247,7 +216,6 @@ static int hnat_start(void)
 	writel(0, hnat_priv->ppe_base + PPE_DFT_CPORT); /* pdma */
 	/* writel(0x55555555, hnat_priv->ppe_base + PPE_DFT_CPORT); */ /* qdma */
 	cr_set_field(hnat_priv->ppe_base + PPE_GLO_CFG, TTL0_DRP, 0);
-	cr_set_field(hnat_priv->ppe_base + PPE_GLO_CFG, MCAST_TB_EN, 1);
 
 	/*enable ppe mib counter*/
 	if (hnat_priv->data->per_flow_accounting) {
@@ -284,7 +252,7 @@ static int ppe_busy_wait(void)
 			return 0;
 		if (time_after(jiffies, t_start + HZ))
 			break;
-		mdelay(10);
+		usleep_range(10, 20);
 	}
 
 	dev_notice(hnat_priv->dev, "ppe:%s timeout\n", __func__);
@@ -570,12 +538,6 @@ static int hnat_probe(struct platform_device *pdev)
 	if (hnat_priv->data->mcast)
 		hnat_mcast_enable();
 	timer_setup(&hnat_priv->hnat_sma_build_entry_timer, hnat_sma_build_entry, 0);
-	if (hnat_priv->data->version == MTK_HNAT_V3) {
-		timer_setup(&hnat_priv->hnat_reset_timestamp_timer, hnat_reset_timestamp, 0);
-		hnat_priv->hnat_reset_timestamp_timer.expires = jiffies;
-		add_timer(&hnat_priv->hnat_reset_timestamp_timer);
-	}
-
 #if defined(CONFIG_NET_MEDIATEK_HW_QOS)
 	if (IS_GMAC1_MODE)
 		dev_add_pack(&mtk_pack_type);
@@ -623,7 +585,7 @@ static const struct mtk_hnat_data hnat_data_v1 = {
 	.num_of_sch = 2,
 	.whnat = true,
 	.per_flow_accounting = false,
-	.mcast =false,
+	.mcast = false,
 	.sfq = false,
 	.version = MTK_HNAT_V1,
 };
