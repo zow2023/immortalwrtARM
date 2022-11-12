@@ -98,7 +98,7 @@
 	};
 };
 
-&nand {
+&nand_controller {
 	status = "okay";
 
 	pinctrl-0 = <&nand_pins>;
@@ -283,12 +283,10 @@
 
 &usb3_0 {
 	status = "okay";
-	clocks = <&gcc USB30_1_MASTER_CLK>;
 };
 
 &usb3_1 {
 	status = "okay";
-	clocks = <&gcc USB30_0_MASTER_CLK>;
 };
 
 &pcie0 {

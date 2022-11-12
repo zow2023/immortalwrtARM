@@ -3,6 +3,7 @@ include ./common-netgear.mk
 include ./common-senao.mk
 include ./common-tp-link.mk
 include ./common-yuncore.mk
+include ./common-ubnt.mk
 
 DEVICE_VARS += ADDPATTERN_ID ADDPATTERN_VERSION
 DEVICE_VARS += SEAMA_SIGNATURE SEAMA_MTDBLOCK
@@ -160,6 +161,7 @@ define Build/wrgg-pad-rootfs
 	$(STAGING_DIR_HOST)/bin/padjffs2 $(IMAGE_ROOTFS) -c 64 >>$@
 endef
 
+
 define Device/seama
   KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma
   KERNEL_INITRAMFS := $$(KERNEL) | seama
@@ -207,7 +209,7 @@ define Device/adtran_bsap1880
   IMAGE_SIZE := 11200k
   IMAGES += kernel.bin rootfs.bin
   IMAGE/kernel.bin := append-kernel
-  IMAGE/rootfs.bin := append-rootfs | pad-rootfs
+  IMAGE/rootfs.bin := append-rootfs | pad-rootfs | pad-to $$(BLOCKSIZE)
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | \
 	check-size | sysupgrade-tar rootfs=$$$$@ | append-metadata
 endef
@@ -401,7 +403,6 @@ define Device/atheros_db120
   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs | check-size | pad-to 6336k | \
 	append-loader-okli-uimage $(1) | pad-to 64k
-  DEFAULT := n
 endef
 TARGET_DEVICES += atheros_db120
 
@@ -620,7 +621,6 @@ define Device/comfast_cf-e313ac
   DEVICE_PACKAGES := rssileds kmod-ath10k-ct-smallbuffers \
 	ath10k-firmware-qca9888-ct -swconfig -uboot-envtools
   IMAGE_SIZE := 7936k
-  DEFAULT := n
 endef
 TARGET_DEVICES += comfast_cf-e313ac
 
@@ -863,7 +863,8 @@ define Device/dlink_dap-2xxx
   IMAGE/factory.img := append-kernel | pad-offset 6144k 160 | \
 	append-rootfs | wrgg-pad-rootfs | mkwrggimg | check-size
   IMAGE/sysupgrade.bin := append-kernel | mkwrggimg | \
-	pad-to $$$$(BLOCKSIZE) | append-rootfs | check-size | append-metadata
+	pad-to $$$$(BLOCKSIZE) | append-rootfs | wrgg-pad-rootfs | \
+	check-size | append-metadata
   KERNEL := kernel-bin | append-dtb | relocate-kernel | lzma
   KERNEL_INITRAMFS := $$(KERNEL) | mkwrggimg
 endef
@@ -897,7 +898,7 @@ define Device/dlink_dap-2680-a1
   DEVICE_VENDOR := D-Link
   DEVICE_MODEL := DAP-2680
   DEVICE_VARIANT := A1
-  DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct kmod-ath10k-ct
+  DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ath10k-ct
   IMAGE_SIZE := 15232k
   DAP_SIGNATURE := wapac36_dkbs_dap2680
 endef
@@ -974,7 +975,6 @@ define Device/dlink_dir-825-b1
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-usb-ledtrig-usbport \
 	kmod-leds-reset kmod-owl-loader
   SUPPORTED_DEVICES += dir-825-b1
-  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dir-825-b1
 
@@ -1246,6 +1246,16 @@ define Device/etactica_eg200
 endef
 TARGET_DEVICES += etactica_eg200
 
+define Device/extreme-networks_ws-ap3805i
+  SOC := qca9557
+  BLOCKSIZE := 256k
+  DEVICE_VENDOR := Extreme Networks
+  DEVICE_MODEL := WS-AP3805i
+  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
+  IMAGE_SIZE := 29440k
+endef
+TARGET_DEVICES += extreme-networks_ws-ap3805i
+
 define Device/glinet_6408
   $(Device/tplink-8mlzma)
   SOC := ar9331
@@ -1455,15 +1465,24 @@ define Device/jjplus_ja76pf2
   DEVICE_VENDOR := jjPlus
   DEVICE_MODEL := JA76PF2
   DEVICE_PACKAGES += -kmod-ath9k -swconfig -wpad-basic-wolfssl -uboot-envtools fconfig
-  IMAGES += kernel.bin rootfs.bin
-  IMAGE/kernel.bin := append-kernel
-  IMAGE/rootfs.bin := append-rootfs | pad-rootfs
-  IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | combined-image | \
-	check-size | append-metadata
-  KERNEL := kernel-bin | append-dtb | lzma | pad-to $$(BLOCKSIZE)
+  LOADER_TYPE := bin
+  LOADER_FLASH_OFFS := 0x60000
+  COMPILE := loader-$(1).bin
+  COMPILE/loader-$(1).bin := loader-okli-compile | lzma | pad-to 128k
+  ARTIFACTS := loader.bin
+  ARTIFACT/loader.bin := append-loader-okli $(1)
+  IMAGES += firmware.bin
+  IMAGE/firmware.bin := append-kernel | uImage lzma -M 0x4f4b4c49 | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs | pad-to $$$$(BLOCKSIZE) | check-size
+  IMAGE/sysupgrade.bin := $$(IMAGE/firmware.bin) | \
+	sysupgrade-tar kernel=$$$$(KDIR)/loader-$(1).bin rootfs=$$$$@ | append-metadata
+  KERNEL := kernel-bin | append-dtb | lzma
   KERNEL_INITRAMFS := kernel-bin | append-dtb
-  IMAGE_SIZE := 16000k
-  SUPPORTED_DEVICES += ja76pf2
+  IMAGE_SIZE := 15872k
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := Partition design has changed compared to older versions (19.07 and 21.02) \
+	due to kernel drivers restrictions. Upgrade via sysupgrade mechanism is one way operation. \
+	Downgrading OpenWrt version will involve usage of bootloader command line interface.
 endef
 TARGET_DEVICES += jjplus_ja76pf2
 
@@ -1572,7 +1591,6 @@ define Device/nec_wf1200cr
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(IMAGE/default) | pad-rootfs -x 64 | seama | \
 	seama-seal | nec-enc ryztfyutcrqqo69d | check-size
-  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wf1200cr
 
@@ -1586,7 +1604,6 @@ define Device/nec_wg1200cr
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(IMAGE/default) | pad-rootfs -x 64 | seama | \
 	seama-seal | nec-enc 9gsiy9nzep452pad | check-size
-  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wg1200cr
 
@@ -1600,7 +1617,6 @@ define Device/nec_wg800hp
 	append-rootfs | pad-rootfs | check-size | \
 	xor-image -p 6A57190601121E4C004C1E1201061957 -x | nec-fw LASER_ATERM
   DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct-full-htt
-  DEFAULT := n
 endef
 TARGET_DEVICES += nec_wg800hp
 
@@ -1646,6 +1662,21 @@ define Device/netgear_ex7300-v2
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9984-ct
 endef
 TARGET_DEVICES += netgear_ex7300-v2
+
+define Device/netgear_wndap360
+  $(Device/netgear_generic)
+  SOC := ar7161
+  DEVICE_MODEL := WNDAP360
+  DEVICE_PACKAGES := kmod-leds-reset kmod-owl-loader
+  IMAGE_SIZE := 7744k
+  BLOCKSIZE := 256k
+  KERNEL := kernel-bin | append-dtb | gzip | uImage gzip
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | uImage none
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | append-rootfs | pad-rootfs | \
+	check-size | append-metadata
+endef
+TARGET_DEVICES += netgear_wndap360
 
 define Device/netgear_wndr3x00
   $(Device/netgear_generic)
@@ -1765,7 +1796,6 @@ define Device/ocedo_koala
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   SUPPORTED_DEVICES += koala
   IMAGE_SIZE := 7424k
-  DEFAULT := n
 endef
 TARGET_DEVICES += ocedo_koala
 
@@ -1774,7 +1804,6 @@ define Device/ocedo_raccoon
   DEVICE_VENDOR := Ocedo
   DEVICE_MODEL := Raccoon
   IMAGE_SIZE := 7424k
-  DEFAULT := n
 endef
 TARGET_DEVICES += ocedo_raccoon
 
@@ -1784,7 +1813,6 @@ define Device/ocedo_ursus
   DEVICE_MODEL := Ursus
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   IMAGE_SIZE := 7424k
-  DEFAULT := n
 endef
 TARGET_DEVICES += ocedo_ursus
 
@@ -2013,7 +2041,6 @@ define Device/openmesh_om5p-ac-v2
   DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct
   OPENMESH_CE_TYPE := OM5PAC
   SUPPORTED_DEVICES += om5p-acv2
-  DEFAULT := n
 endef
 TARGET_DEVICES += openmesh_om5p-ac-v2
 
@@ -2141,7 +2168,6 @@ define Device/qca_ap143-8m
   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs | check-size | pad-to 6336k | \
 	append-loader-okli-uimage $(1) | pad-to 64k
-  DEFAULT := n
 endef
 TARGET_DEVICES += qca_ap143-8m
 
@@ -2188,7 +2214,6 @@ define Device/qxwlan_e1700ac-v2-8m
   $(Device/qxwlan_e1700ac-v2)
   DEVICE_VARIANT := v2 (8M)
   IMAGE_SIZE := 7744k
-  DEFAULT := n
 endef
 TARGET_DEVICES += qxwlan_e1700ac-v2-8m
 
@@ -2255,7 +2280,6 @@ define Device/qxwlan_e600gac-v2-8m
   $(Device/qxwlan_e600gac-v2)
   DEVICE_VARIANT := v2 (8M)
   IMAGE_SIZE := 7744k
-  DEFAULT := n
 endef
 TARGET_DEVICES += qxwlan_e600gac-v2-8m
 
@@ -2312,6 +2336,29 @@ define Device/rosinson_wr818
 endef
 TARGET_DEVICES += rosinson_wr818
 
+define Device/ruckus_zf73xx_common
+  DEVICE_VENDOR := Ruckus
+  DEVICE_PACKAGES := -swconfig kmod-usb2 kmod-usb-chipidea2
+  IMAGE_SIZE := 31744k
+  LOADER_TYPE := bin
+  KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | uImage none
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | loader-kernel | uImage none
+endef
+
+define Device/ruckus_zf7321
+  $(Device/ruckus_zf73xx_common)
+  SOC := ar9342
+  DEVICE_MODEL := ZoneFlex 7321[-U]
+endef
+TARGET_DEVICES += ruckus_zf7321
+
+define Device/ruckus_zf7372
+  $(Device/ruckus_zf73xx_common)
+  SOC := ar9344
+  DEVICE_MODEL := ZoneFlex 7352/7372[-E/-U]
+endef
+TARGET_DEVICES += ruckus_zf7372
+
 define Device/samsung_wam250
   SOC := ar9344
   DEVICE_VENDOR := Samsung
@@ -2347,7 +2394,6 @@ define Device/sitecom_wlr-7100
 	append-rootfs | pad-rootfs | check-size | \
 	senao-header -r 0x222 -p 0x53 -t 2
   IMAGE_SIZE := 7488k
-  DEFAULT := n
 endef
 TARGET_DEVICES += sitecom_wlr-7100
 
@@ -2366,6 +2412,42 @@ define Device/sitecom_wlr-8100
   IMAGE_SIZE := 15424k
 endef
 TARGET_DEVICES += sitecom_wlr-8100
+
+define Device/sophos_ap55
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP55
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap55
+
+define Device/sophos_ap55c
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP55C
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap55c
+
+define Device/sophos_ap100
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP100
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap100
+
+define Device/sophos_ap100c
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP100C
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap100c
 
 define Device/telco_t1
   SOC := qca9531
@@ -2489,7 +2571,6 @@ define Device/wd_mynet-wifi-rangeextender
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | cybertan-trx | \
 	addpattern | append-metadata
   SUPPORTED_DEVICES += mynet-rext
-  DEFAULT := n
 endef
 TARGET_DEVICES += wd_mynet-wifi-rangeextender
 
@@ -2541,6 +2622,27 @@ define Device/yuncore_a782
   IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
 endef
 TARGET_DEVICES += yuncore_a782
+
+define Device/yuncore_a930
+  SOC := qca9533
+  DEVICE_VENDOR := YunCore
+  DEVICE_MODEL := A930
+  IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+endef
+TARGET_DEVICES += yuncore_a930
+
+define Device/yuncore_xd3200
+  SOC := qca9563
+  DEVICE_VENDOR := YunCore
+  DEVICE_MODEL := XD3200
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+endef
+TARGET_DEVICES += yuncore_xd3200
 
 define Device/yuncore_xd4200
   SOC := qca9563

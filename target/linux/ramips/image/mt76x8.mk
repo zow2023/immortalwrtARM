@@ -47,6 +47,19 @@ define Device/asus_rt-ac1200
 endef
 TARGET_DEVICES += asus_rt-ac1200
 
+define Device/asus_rt-ac1200-v2
+  BLOCKSIZE := 64k
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Asus
+  DEVICE_MODEL := RT-AC1200
+  DEVICE_VARIANT := V2
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
+	append-rootfs | pad-rootfs
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7663-firmware-ap
+endef
+TARGET_DEVICES += asus_rt-ac1200-v2
+
 define Device/asus_rt-n10p-v3
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := Asus
@@ -160,7 +173,6 @@ define Device/elecom_wrc-1167fs
 	xor-image -p 29944A25 -x | elecom-header 00228000 | \
 	elecom-product-header WRC-1167FS
   DEVICE_PACKAGES := kmod-mt76x2
-  DEFAULT := n
 endef
 TARGET_DEVICES += elecom_wrc-1167fs
 
@@ -464,7 +476,6 @@ define Device/tplink_archer-c20-v5
   TPLINK_HWREVADD := 0x5
   DEVICE_PACKAGES := kmod-mt76x0e
   IMAGES := sysupgrade.bin
-  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c20-v5
 
@@ -496,7 +507,6 @@ define Device/tplink_archer-c50-v4
   DEVICE_PACKAGES := kmod-mt76x2
   IMAGES := sysupgrade.bin
   SUPPORTED_DEVICES += tplink,c50-v4
-  DEFAULT := n
 endef
 TARGET_DEVICES += tplink_archer-c50-v4
 
@@ -779,6 +789,17 @@ define Device/vocore_vocore2-lite
 endef
 TARGET_DEVICES += vocore_vocore2-lite
 
+define Device/wavlink_wl-wn531a3
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Wavlink
+  DEVICE_MODEL := WL-WN531A3
+  DEVICE_ALT0_VENDOR := Wavlink
+  DEVICE_ALT0_MODEL := QUANTUM D4
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci
+  SUPPORTED_DEVICES += wl-wn531a3
+endef
+TARGET_DEVICES += wavlink_wl-wn531a3
+
 define Device/wavlink_wl-wn570ha1
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := Wavlink
@@ -880,6 +901,16 @@ define Device/xiaomi_mi-router-4a-100m
   SUPPORTED_DEVICES += xiaomi,mir4a-100m
 endef
 TARGET_DEVICES += xiaomi_mi-router-4a-100m
+
+define Device/xiaomi_mi-router-4a-100m-intl
+  IMAGE_SIZE := 14976k
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Mi Router 4A
+  DEVICE_VARIANT := 100M International Edition
+  DEVICE_PACKAGES := kmod-mt76x2
+  SUPPORTED_DEVICES += xiaomi,mir4a-100m-intl
+endef
+TARGET_DEVICES += xiaomi_mi-router-4a-100m-intl
 
 define Device/xiaomi_mi-router-4c
   IMAGE_SIZE := 14976k

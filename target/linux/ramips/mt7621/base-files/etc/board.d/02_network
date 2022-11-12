@@ -13,17 +13,24 @@ ramips_setup_interfaces()
 	mikrotik,routerboard-m11g|\
 	netgear,ex6150|\
 	sercomm,na502|\
+	sercomm,na502s|\
 	thunder,timecloud|\
 	tplink,re350-v1|\
 	tplink,re500-v1|\
 	tplink,re650-v1|\
+	tplink,re650-v2|\
 	ubnt,unifi-6-lite|\
-	ubnt,unifi-nanohd)
+	ubnt,unifi-flexhd|\
+	ubnt,unifi-nanohd|\
+	zyxel,nwa50ax|\
+	zyxel,nwa55axe)
 		ucidef_set_interface_lan "lan"
 		;;
 	ampedwireless,ally-r1900k|\
+	asus,rt-ax53u|\
 	gehua,ghl-r-001|\
 	hiwifi,hc5962|\
+	netgear,wax202|\
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-ac2100|\
 	xiaomi,mi-router-cr6606|\
@@ -44,6 +51,8 @@ ramips_setup_interfaces()
 	jcg,q20|\
 	lenovo,newifi-d1|\
 	mikrotik,routerboard-m33g|\
+	mts,wg430223|\
+	oraybox,x3a|\
 	renkforce,ws-wn530hp3-a|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3g-v2|\
@@ -51,9 +60,18 @@ ramips_setup_interfaces()
 	xiaomi,mi-router-4a-gigabit)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" "wan"
 		;;
-	gnubee,gb-pc1|\
+	bolt,arion)
+		ucidef_set_interfaces_lan_wan "lan" "wan"
+		ucidef_set_interface "eth_data" device "modem.103" protocol "static" ipaddr "10.22.127.222" netmask "255.255.255.255"
+		ucidef_set_interface "eth_om" device "modem.4094" protocol "static" ipaddr "169.254.0.2" netmask "255.255.255.252"
+		uci add_list firewall.@zone[1].network='eth_data'
+		uci add_list firewall.@zone[1].network='eth_om'
+		;;
+	gnubee,gb-pc1)
+		ucidef_set_interface_lan "ethblack ethblue"
+		;;
 	gnubee,gb-pc2)
-		ucidef_set_interface_lan "lan1 lan2"
+		ucidef_set_interface_lan "ethblack ethblue ethyellow"
 		;;
 	linksys,re6500|\
 	netgear,wac104)
@@ -81,6 +99,7 @@ ramips_setup_interfaces()
 	ubnt,usw-flex)
 		ucidef_set_interface_lan "lan1 lan2 lan3 lan4 lan5"
 		;;
+	yuncore,ax820|\
 	zyxel,nr7101)
 		ucidef_set_interfaces_lan_wan "lan" "wan"
 		;;
@@ -117,9 +136,9 @@ ramips_setup_macs()
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
 	beeline,smartbox-flash)
-		lan_mac=$(mtd_get_mac_ascii u-boot-env eth2macaddr)
-		wan_mac=$(mtd_get_mac_ascii u-boot-env eth3macaddr)
-		label_mac=$lan_mac
+		wan_mac=$(mtd_get_mac_encrypted_arcadyan "board_data")
+		label_mac=$(macaddr_add "$wan_mac" 3)
+		lan_mac=$label_mac
 		;;
 	buffalo,wsr-1166dhp)
 		local index="$(find_mtd_index "board_data")"
@@ -156,6 +175,7 @@ ramips_setup_macs()
 		;;
 	jcg,y2|\
 	wavlink,wl-wn531a6|\
+	wavlink,wl-wn533a8|\
 	winstars,ws-wn583a6|\
 	zbtlink,zbt-we1326|\
 	zbtlink,zbt-wg3526-16m|\
@@ -181,10 +201,23 @@ ramips_setup_macs()
 		wan_mac=$label_mac
 		lan_mac=$(macaddr_add $label_mac 1)
 		;;
+	mts,wg430223)
+		wan_mac=$(mtd_get_mac_encrypted_arcadyan "board_data")
+		label_mac=$wan_mac
+		lan_mac=$(macaddr_add "$wan_mac" 2)
+		;;
+	netgear,wax202)
+		lan_mac=$(mtd_get_mac_ascii Config mac)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
+		label_mac=$lan_mac
+		;;
 	raisecom,msg1500-x-00)
 		lan_mac=$(mtd_get_mac_ascii Config protest_lan_mac)
 		wan_mac=$(mtd_get_mac_ascii Config protest_wan_mac)
 		label_mac=$lan_mac
+		;;
+	yuncore,ax820)
+		label_mac=$(mtd_get_mac_binary Factory 0x4)
 		;;
 	esac
 

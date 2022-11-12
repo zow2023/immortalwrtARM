@@ -25,7 +25,8 @@ Once this is done. Retry.
 EOF
 		return 1
 		;;
-	zte,mf286d)
+	zte,mf286d |\
+	zte,mf289f)
 		CI_UBIPART="rootfs"
 		local mtdnum="$( find_mtd_index $CI_UBIPART )"
 		[ ! "$mtdnum" ] && return 1
@@ -149,17 +150,8 @@ platform_do_upgrade() {
 		CI_UBIPART="ubifs"
 		askey_do_upgrade "$1"
 		;;
-	compex,wpj419|\
-	p2w,r619ac|\
-	p2w,r619ac-128m)
+	compex,wpj419)
 		nand_do_upgrade "$1"
-		;;
-	google,wifi)
-		export_bootdevice
-		export_partdevice CI_ROOTDEV 0
-		CI_KERNPART="kernel"
-		CI_ROOTPART="rootfs"
-		emmc_do_upgrade "$1"
 		;;
 	linksys,ea6350v3 |\
 	linksys,ea8300 |\
@@ -194,7 +186,8 @@ platform_do_upgrade() {
 		platform_do_upgrade_dualboot_datachk "$1"
 		;;
 	teltonika,rutx10 |\
-	zte,mf286d)
+	zte,mf286d |\
+	zte,mf289f)
 		CI_UBIPART="rootfs"
 		nand_do_upgrade "$1"
 		;;
@@ -209,8 +202,7 @@ platform_do_upgrade() {
 
 platform_copy_config() {
 	case "$(board_name)" in
-	glinet,gl-b2200 |\
-	google,wifi)
+	glinet,gl-b2200)
 		emmc_copy_config
 		;;
 	esac

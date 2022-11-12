@@ -15,6 +15,16 @@ define Device/d-link_dgs-1210
   SOC := rtl8382
   IMAGE_SIZE := 13824k
   DEVICE_VENDOR := D-Link
+  DLINK_KERNEL_PART_SIZE := 1572864
+  KERNEL := kernel-bin | append-dtb | gzip | uImage gzip | dlink-cameo
+  CAMEO_KERNEL_PART := 2
+  CAMEO_ROOTFS_PART := 3
+  CAMEO_CUSTOMER_SIGNATURE := 2
+  CAMEO_BOARD_VERSION := 32
+  IMAGES += factory_image1.bin
+  IMAGE/factory_image1.bin := append-kernel | pad-to 64k | \
+	append-rootfs | pad-rootfs | pad-to 16 | check-size | \
+	dlink-version | dlink-headers
 endef
 
 define Device/d-link_dgs-1210-10p
@@ -111,6 +121,14 @@ define Device/zyxel_gs1900-10hp
 endef
 TARGET_DEVICES += zyxel_gs1900-10hp
 
+define Device/zyxel_gs1900-16
+  $(Device/zyxel_gs1900)
+  SOC := rtl8382
+  DEVICE_MODEL := GS1900-16
+  ZYXEL_VERS := AAHJ
+endef
+TARGET_DEVICES += zyxel_gs1900-16
+
 define Device/zyxel_gs1900-8
   $(Device/zyxel_gs1900)
   DEVICE_MODEL := GS1900-8
@@ -144,6 +162,23 @@ define Device/zyxel_gs1900-24-v1
   ZYXEL_VERS := AAHL
 endef
 TARGET_DEVICES += zyxel_gs1900-24-v1
+
+define Device/zyxel_gs1900-24e
+  $(Device/zyxel_gs1900)
+  SOC := rtl8382
+  DEVICE_MODEL := GS1900-24E
+  ZYXEL_VERS := AAHK
+endef
+TARGET_DEVICES += zyxel_gs1900-24e
+
+define Device/zyxel_gs1900-24hp-v1
+  $(Device/zyxel_gs1900)
+  SOC := rtl8382
+  DEVICE_MODEL := GS1900-24HP
+  DEVICE_VARIANT := v1
+  ZYXEL_VERS := AAHM
+endef
+TARGET_DEVICES += zyxel_gs1900-24hp-v1
 
 define Device/zyxel_gs1900-24hp-v2
   $(Device/zyxel_gs1900)

@@ -46,7 +46,6 @@ ipq40xx_setup_interfaces()
 	cilab,meshpoint-one|\
 	edgecore,ecw5211|\
 	edgecore,oap100|\
-	google,wifi|\
 	openmesh,a42|\
 	openmesh,a62)
 		ucidef_set_interfaces_lan_wan "eth1" "eth0"
@@ -151,6 +150,11 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0u@eth0" "2:lan:4" "3:lan:3" "4:lan:2" "0u@eth1" "5:wan"
 		;;
+	zte,mf289f)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+				"0u@eth0" "5:lan:2" "0u@eth1" "2:wan"
+		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
 		;;
@@ -216,11 +220,6 @@ ipq40xx_setup_macs()
 	mikrotik,sxtsq-5-ac)
 		lan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		label_mac="$lan_mac"
-		;;
-	p2w,r619ac|\
-	p2w,r619ac-128m)
-		wan_mac=$(cat /sys/class/net/eth0/address)
-		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
 	esac
 

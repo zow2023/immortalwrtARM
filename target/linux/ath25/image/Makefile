@@ -43,7 +43,7 @@ endef
 define Build/copy-kernel
 	rm -f $@ $@.elf
 	cp $< $@
-	cp $< $@.elf
+	cp $<.elf $@.elf
 endef
 
 define Build/elf-kernel
@@ -54,6 +54,9 @@ endef
 define Device/Default
   PROFILES = Default $$(DEVICE_NAME)
   KERNEL := copy-kernel | lzma-kernel
+  KERNEL_INITRAMFS = kernel-bin
+  KERNEL_INITRAMFS_NAME := vmlinux-initramfs.elf
+  KERNEL_INITRAMFS_SUFFIX := -kernel.elf
   IMAGES := sysupgrade.bin
   FILESYSTEMS := squashfs
 endef
@@ -75,7 +78,6 @@ define Device/ubnt_picostation-2
   DEVICE_VENDOR := Ubiquiti
   DEVICE_MODEL := Picostation 2 (XS2-8)
   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to 128k | mkfwimage XS2-8 -v XS2.ar2316
-  DEFAULT := n
 endef
 TARGET_DEVICES += ubnt_picostation-2
 
