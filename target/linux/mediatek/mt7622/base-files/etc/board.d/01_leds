@@ -1,20 +1,17 @@
-. /lib/functions/leds.sh
-. /lib/functions/uci-defaults.sh
+#!/bin/sh
+#
+# Copyright © 2017 OpenWrt.org
+#
 
-board=$(board_name)
+. /lib/functions/uci-defaults.sh
 
 board_config_update
 
-case $board in
-linksys,e8450|\
-linksys,e8450-ubi)
-	ucidef_set_led_netdev "wan" "WAN" "inet:blue" "wan"
-	;;
+case "$(board_name)" in
 xiaomi,redmi-router-ax6s)
 	ucidef_set_led_netdev "wan" "eth0" "blue:net" "eth0"
 	;;
 esac
-
 board_config_flush
 
 exit 0

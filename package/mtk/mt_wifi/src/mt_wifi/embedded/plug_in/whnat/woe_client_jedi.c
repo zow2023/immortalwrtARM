@@ -149,8 +149,7 @@ void wifi_tx_tuple_add(void *entry, unsigned char *tx_info)
 
 	memset(info, 0, sizeof(*info));
 	wifi_tx_info_wrapper(tx_info, info);
-	WHNAT_DBG(WHNAT_DBG_INF, "WDMAID: %d,RingID: %d, Wcid: %d, Bssid: %d\n",
-			whnat->idx, info->ringidx, info->wcid, info->bssidx);
+	
 
 	if (whnat && ra_sw_nat_hook_tx && whnat->cfg.hw_tx_en) {
 		struct sk_buff *skb = (struct sk_buff *)info->pkt;

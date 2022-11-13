@@ -49,6 +49,9 @@ static const struct of_device_id whnat_of_ids[] = {
 static const unsigned int whnat_support_list[] = {
 	0x7615,
 	0x7915,
+	0x7986,
+	0x7906,
+	0x7981,
 	0
 };
 

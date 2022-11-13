@@ -245,6 +245,7 @@ define KernelPackage/mt_wifi
   MENU:=1
 endef
 
+
 define KernelPackage/mt_wifi/config
 	source "$(SOURCE)/config.in"
 endef

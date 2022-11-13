@@ -14,6 +14,7 @@ define Device/asus_rt-n56u
   DEVICE_MODEL := RT-N56U
   DEVICE_PACKAGES := kmod-usb-ohci kmod-usb2
   SUPPORTED_DEVICES += rt-n56u
+  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n56u
 
@@ -52,7 +53,7 @@ define Device/edimax_br-6475nd
   IMAGE_SIZE := 7744k
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
 	edimax-header -s CSYS -m RN54 -f 0x70000 -S 0x01100000 | pad-rootfs | \
-	check-size | append-metadata
+	append-metadata | check-size
   DEVICE_VENDOR := Edimax
   DEVICE_MODEL := BR-6475nD
   SUPPORTED_DEVICES += br-6475nd
@@ -97,6 +98,7 @@ TARGET_DEVICES += omnima_hpm
 define Device/samsung_cy-swr1100
   $(Device/seama)
   SOC := rt3662
+  BLOCKSIZE := 64k
   IMAGE_SIZE := 7872k
   KERNEL := $(KERNEL_DTB)
   SEAMA_SIGNATURE := wrgnd10_samsung_ss815

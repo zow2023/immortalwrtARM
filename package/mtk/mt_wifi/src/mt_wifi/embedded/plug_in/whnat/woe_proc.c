@@ -478,73 +478,82 @@ static int whnat_proc_rx_open(struct inode *inode, struct file *file)
 /*
  * global file operation
 */
-static const struct proc_ops proc_whnat_trace_fops = {
-	.proc_open = whnat_proc_trace_open,
-	.proc_write  = whnat_proc_trace_write,
-	.proc_read	= seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_whnat_trace_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_trace_open,
+	.write  = whnat_proc_trace_write,
+	.read	= seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_whnat_cr_fops = {
-	.proc_open = whnat_proc_cr_open,
-	.proc_write  = whnat_proc_cr_write,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_whnat_cr_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_cr_open,
+	.write  = whnat_proc_cr_write,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_whnat_stat_fops = {
-	.proc_open = whnat_proc_state_open,
-	.proc_write  = whnat_proc_state_write,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_whnat_stat_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_state_open,
+	.write  = whnat_proc_state_write,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_whnat_cfg_fops = {
-	.proc_open = whnat_proc_cfg_open,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_whnat_cfg_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_cfg_open,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_whnat_tx_fops = {
-	.proc_open = whnat_proc_tx_open,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_whnat_tx_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_tx_open,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_whnat_rx_fops = {
-	.proc_open = whnat_proc_rx_open,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_whnat_rx_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_rx_open,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_wed_fops = {
-	.proc_open = wed_proc_open,
-	.proc_write  = wed_proc_write,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_wed_fops = {
+	.owner = THIS_MODULE,
+	.open = wed_proc_open,
+	.write  = wed_proc_write,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_wdma_fops = {
-	.proc_open = wdma_proc_open,
-	.proc_write  = wdma_proc_write,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_wdma_fops = {
+	.owner = THIS_MODULE,
+	.open = wdma_proc_open,
+	.write  = wdma_proc_write,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-static const struct proc_ops proc_ctrl_fops = {
-	.proc_open = whnat_proc_ctrl_open,
-	.proc_write  = whnat_proc_ctrl_write,
-	.proc_read  = seq_read,
-	.proc_lseek = seq_lseek,
-	.proc_release = single_release,
+static const struct file_operations proc_ctrl_fops = {
+	.owner = THIS_MODULE,
+	.open = whnat_proc_ctrl_open,
+	.write  = whnat_proc_ctrl_write,
+	.read  = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
 /*
