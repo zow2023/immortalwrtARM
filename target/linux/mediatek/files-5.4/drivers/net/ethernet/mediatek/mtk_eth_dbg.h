@@ -24,8 +24,6 @@
 #define MTK_FE_CDM2_FSM			0x224
 #define MTK_FE_CDM3_FSM			0x238
 #define MTK_FE_CDM4_FSM			0x298
-#define MTK_FE_CDM5_FSM			0x318
-#define MTK_FE_CDM6_FSM			0x328
 #define MTK_FE_GDM1_FSM			0x228
 #define MTK_FE_GDM2_FSM			0x22C
 #define MTK_FE_PSE_FREE			0x240
@@ -55,13 +53,11 @@
 
 #define PROCREG_ESW_CNT			"esw_cnt"
 #define PROCREG_TXRING			"tx_ring"
-#define PROCREG_HWTXRING		"hwtx_ring"
 #define PROCREG_RXRING			"rx_ring"
 #define PROCREG_DIR			"mtketh"
 #define PROCREG_DBG_REGS		"dbg_regs"
 #define PROCREG_HW_LRO_STATS		"hw_lro_stats"
 #define PROCREG_HW_LRO_AUTO_TLB		"hw_lro_auto_tlb"
-#define PROCREG_RESET_EVENT		"reset_event"
 
 /* HW LRO flush reason */
 #define MTK_HW_LRO_AGG_FLUSH		(1)
@@ -269,11 +265,12 @@ static inline bool mt7530_exist(struct mtk_eth *eth)
 }
 #endif
 
-extern u32 _mtk_mdio_read(struct mtk_eth *eth, int phy_addr, int phy_reg);
-extern u32 _mtk_mdio_write(struct mtk_eth *eth, int phy_addr,
-		    int phy_reg, u16 write_data);
+extern u32 _mtk_mdio_read(struct mtk_eth *eth, u16 phy_addr, u16 phy_reg);
+extern u32 _mtk_mdio_write(struct mtk_eth *eth, u16 phy_addr,
+		    u16 phy_register, u16 write_data);
 
-extern atomic_t force;
+extern u32 mtk_cl45_ind_read(struct mtk_eth *eth, u16 port, u16 devad, u16 reg, u16 *data);
+extern u32 mtk_cl45_ind_write(struct mtk_eth *eth, u16 port, u16 devad, u16 reg, u16 data);
 
 int debug_proc_init(struct mtk_eth *eth);
 void debug_proc_exit(void);
@@ -281,7 +278,7 @@ void debug_proc_exit(void);
 int mtketh_debugfs_init(struct mtk_eth *eth);
 void mtketh_debugfs_exit(struct mtk_eth *eth);
 int mtk_do_priv_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
-void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd);
-void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd);
+void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma *rxd);
+void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma *rxd);
 
 #endif /* MTK_ETH_DBG_H */
