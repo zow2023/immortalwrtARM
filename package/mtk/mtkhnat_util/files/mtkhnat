@@ -63,9 +63,7 @@ insmod mtkhnat
 echo 1 ${scheduling} ${sch0_bw} > /sys/kernel/debug/${module}/qdma_sch0
 echo 1 ${scheduling} ${sch1_bw} > /sys/kernel/debug/${module}/qdma_sch1
 
-# enable bridge netfilter module to allow skb being marked
-echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
-echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
+
 
 setup_queue() {
 	local queue_id queue_scheduler queue_minebl queue_maxebl

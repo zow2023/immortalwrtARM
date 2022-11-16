@@ -1,8 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0
 #
 # Copyright (C) 2020 MediaTek Inc. All rights reserved.
 # Author: Weijie Gao <weijie.gao@mediatek.com>
-#
-# SPDX-License-Identifier: GPL-2.0
 #
 
 config MTK_SPI_NAND
@@ -12,3 +11,6 @@ config MTK_SPI_NAND
 	help
 	  This option enables access to SPI-NAND flashes through the
 	  MTD interface of MediaTek SPI NAND Flash Controller
+	  
+	  
+	  

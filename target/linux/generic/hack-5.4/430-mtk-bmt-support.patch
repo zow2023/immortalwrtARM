@@ -1,0 +1,33 @@
+From 11425c9de29c8b9c5e4d7eec163a6afbb7fbdce2 Mon Sep 17 00:00:00 2001
+From: Felix Fietkau <nbd@nbd.name>
+Date: Thu, 9 Apr 2020 09:53:24 +0200
+Subject: mediatek: Implement bad-block management table support
+
+Submitted-by: Felix Fietkau <nbd@nbd.name>
+---
+--- a/drivers/mtd/nand/Kconfig	2022-10-17 23:24:32.000000000 +0800
++++ b/drivers/mtd/nand/Kconfig	2022-11-14 23:53:37.171107674 +0800
+@@ -1,7 +1,10 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config MTD_NAND_CORE
+ 	tristate
+-
++	
++config MTD_NAND_MTK_BMT
++	bool "Support MediaTek NAND Bad-block Management Table"
++	default y
+ source "drivers/mtd/nand/onenand/Kconfig"
+ source "drivers/mtd/nand/raw/Kconfig"
+ source "drivers/mtd/nand/spi/Kconfig"
+
+--- a/drivers/mtd/nand/Makefile	2022-10-17 23:24:32.000000000 +0800
++++ b/drivers/mtd/nand/Makefile	2022-11-14 23:53:58.807472258 +0800
+@@ -2,7 +2,7 @@
+ 
+ nandcore-objs := core.o bbt.o
+ obj-$(CONFIG_MTD_NAND_CORE) += nandcore.o
+-
++obj-$(CONFIG_MTD_NAND_MTK_BMT)	+= mtk_bmt.o mtk_bmt_v2.o mtk_bmt_bbt.o mtk_bmt_nmbm.o
+ obj-y	+= onenand/
+ obj-y	+= raw/
+ obj-y	+= spi/

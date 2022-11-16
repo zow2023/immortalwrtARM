@@ -114,11 +114,6 @@ static inline int irq_completion_wait(struct mtk_snand_plat_dev *pdev,
 				       void __iomem *reg, uint32_t bit,
 				       uint32_t timeout_us)
 {
-#if 0
-	uint32_t val;
-
-	return read32_poll_timeout(reg, val, val & bit, 0, timeout_us);
-#else
 	int ret;
 
 	ret = wait_for_completion_timeout(&pdev->done,
@@ -127,7 +122,6 @@ static inline int irq_completion_wait(struct mtk_snand_plat_dev *pdev,
 		return -ETIMEDOUT;
 
 	return 0;
-#endif
 }
 
 #endif /* _MTK_SNAND_OS_H_ */

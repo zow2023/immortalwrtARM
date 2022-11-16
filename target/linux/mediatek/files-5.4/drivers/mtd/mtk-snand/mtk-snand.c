@@ -60,7 +60,7 @@
 #define NFI_ADDRCNTR			0x070
 #define SEC_CNTR			GENMASK(16, 12)
 #define SEC_CNTR_S			12
-#define NFI_SEC_CNTR(val)               (((val) & SEC_CNTR) >> SEC_CNTR_S)
+#define NFI_SEC_CNTR(val)		(((val) & SEC_CNTR) >> SEC_CNTR_S)
 
 #define NFI_STRADDR			0x080
 
@@ -81,10 +81,6 @@
 #define MAS_WR				GENMASK(5, 3)
 #define MAS_RDDLY			GENMASK(2, 0)
 #define NFI_MASTERSTA_MASK_7622		(MAS_ADDR | MAS_RD | MAS_WR | MAS_RDDLY)
-#define AHB_BUS_BUSY			BIT(1)
-#define BUS_BUSY			BIT(0)
-#define NFI_MASTERSTA_MASK_7981		(AHB_BUS_BUSY | BUS_BUSY)
-#define NFI_MASTERSTA_MASK_7986		(AHB_BUS_BUSY | BUS_BUSY)
 
 /* SNFI registers */
 #define SNF_MAC_CTL			0x500
@@ -119,8 +115,6 @@
 #define   DATA_READ_MODE_X4		2
 #define   DATA_READ_MODE_DUAL		5
 #define   DATA_READ_MODE_QUAD		6
-#define LATCH_LAT_S			8
-#define LATCH_LAT			GENMASK(9, 8)
 #define PG_LOAD_CUSTOM_EN		BIT(7)
 #define DATARD_CUSTOM_EN		BIT(6)
 #define CS_DESELECT_CYC_S		0
@@ -148,16 +142,6 @@
 
 static const uint8_t mt7622_spare_sizes[] = { 16, 26, 27, 28 };
 
-static const uint8_t mt7981_spare_sizes[] = {
-	16, 26, 27, 28, 32, 36, 40, 44, 48, 49, 50, 51, 52, 62, 61, 63, 64,
-	67, 74
-};
-
-static const uint8_t mt7986_spare_sizes[] = {
-	16, 26, 27, 28, 32, 36, 40, 44, 48, 49, 50, 51, 52, 62, 61, 63, 64,
-	67, 74
-};
-
 static const struct mtk_snand_soc_data mtk_snand_socs[__SNAND_SOC_MAX] = {
 	[SNAND_SOC_MT7622] = {
 		.sector_size = 512,
@@ -169,9 +153,7 @@ static const struct mtk_snand_soc_data mtk_snand_socs[__SNAND_SOC_MAX] = {
 		.empty_page_check = false,
 		.mastersta_mask = NFI_MASTERSTA_MASK_7622,
 		.spare_sizes = mt7622_spare_sizes,
-		.num_spare_size = ARRAY_SIZE(mt7622_spare_sizes),
-		.latch_lat = 0,
-		.sample_delay = 40
+		.num_spare_size = ARRAY_SIZE(mt7622_spare_sizes)
 	},
 	[SNAND_SOC_MT7629] = {
 		.sector_size = 512,
@@ -183,37 +165,7 @@ static const struct mtk_snand_soc_data mtk_snand_socs[__SNAND_SOC_MAX] = {
 		.empty_page_check = false,
 		.mastersta_mask = NFI_MASTERSTA_MASK_7622,
 		.spare_sizes = mt7622_spare_sizes,
-		.num_spare_size = ARRAY_SIZE(mt7622_spare_sizes),
-		.latch_lat = 0,
-		.sample_delay = 40
-	},
-	[SNAND_SOC_MT7981] = {
-		.sector_size = 1024,
-		.max_sectors = 16,
-		.fdm_size = 8,
-		.fdm_ecc_size = 1,
-		.fifo_size = 64,
-		.bbm_swap = true,
-		.empty_page_check = true,
-		.mastersta_mask = NFI_MASTERSTA_MASK_7981,
-		.spare_sizes = mt7981_spare_sizes,
-		.num_spare_size = ARRAY_SIZE(mt7981_spare_sizes),
-		.latch_lat = 0,
-		.sample_delay = 40
-	},
-	[SNAND_SOC_MT7986] = {
-		.sector_size = 1024,
-		.max_sectors = 16,
-		.fdm_size = 8,
-		.fdm_ecc_size = 1,
-		.fifo_size = 64,
-		.bbm_swap = true,
-		.empty_page_check = true,
-		.mastersta_mask = NFI_MASTERSTA_MASK_7986,
-		.spare_sizes = mt7986_spare_sizes,
-		.num_spare_size = ARRAY_SIZE(mt7986_spare_sizes),
-		.latch_lat = 0,
-		.sample_delay = 40
+		.num_spare_size = ARRAY_SIZE(mt7622_spare_sizes)
 	},
 };
 
@@ -385,7 +337,7 @@ static int mtk_snand_mac_reset(struct mtk_snand *snf)
 		snand_log_snfi(snf->pdev, "Failed to reset SNFI MAC\n");
 
 	nfi_write32(snf, SNF_MISC_CTL, (2 << FIFO_RD_LTC_S) |
-		    (10 << CS_DESELECT_CYC_S) | (snf->nfi_soc->latch_lat << LATCH_LAT_S));
+		    (10 << CS_DESELECT_CYC_S));
 
 	return ret;
 }
@@ -771,8 +723,7 @@ static int mtk_snand_read_cache(struct mtk_snand *snf, uint32_t page, bool raw)
 
 	/* Set read mode */
 	mode = (uint32_t)snf->mode_rfc << DATA_READ_MODE_S;
-	nfi_rmw32(snf, SNF_MISC_CTL, DATA_READ_MODE,
-			mode | DATARD_CUSTOM_EN | (snf->nfi_soc->latch_lat << LATCH_LAT_S));
+	nfi_rmw32(snf, SNF_MISC_CTL, DATA_READ_MODE, mode | DATARD_CUSTOM_EN);
 
 	/* Set bytes to read */
 	rwbytes = snf->ecc_steps * snf->raw_sector_size;
@@ -869,7 +820,7 @@ cleanup:
 	nfi_read32(snf, NFI_INTR_STA);
 	nfi_write32(snf, NFI_INTR_EN, 0);
 
-	nfi_rmw32(snf, SNF_MISC_CTL, DATARD_CUSTOM_EN | LATCH_LAT, 0);
+	nfi_rmw32(snf, SNF_MISC_CTL, DATARD_CUSTOM_EN, 0);
 
 	return ret;
 }
@@ -905,13 +856,11 @@ static int mtk_snand_do_read_page(struct mtk_snand *snf, uint64_t addr,
 				  void *buf, void *oob, bool raw, bool format)
 {
 	uint64_t die_addr;
-	uint32_t page, dly_ctrl3;
-	int ret, retry_cnt = 0;
+	uint32_t page;
+	int ret;
 
 	die_addr = mtk_snand_select_die_address(snf, addr);
 	page = die_addr >> snf->writesize_shift;
-
-	dly_ctrl3 = nfi_read32(snf, SNF_DLY_CTL3);
 
 	ret = mtk_snand_page_op(snf, page, SNAND_CMD_READ_TO_CACHE);
 	if (ret)
@@ -923,29 +872,9 @@ static int mtk_snand_do_read_page(struct mtk_snand *snf, uint64_t addr,
 		return ret;
 	}
 
-retry:
 	ret = mtk_snand_read_cache(snf, page, raw);
 	if (ret < 0 && ret != -EBADMSG)
 		return ret;
-
-	if (ret == -EBADMSG && retry_cnt < 16) {
-		nfi_write32(snf, SNF_DLY_CTL3, retry_cnt * 2);
-		retry_cnt++;
-		goto retry;
-	}
-
-	if (retry_cnt) {
-		if(ret == -EBADMSG) {
-			nfi_write32(snf, SNF_DLY_CTL3, dly_ctrl3);
-			snand_log_chip(snf->pdev,
-				       "NFI calibration failed. Original sample delay: 0x%x\n",
-				       dly_ctrl3);
-		} else {
-			snand_log_chip(snf->pdev,
-				       "NFI calibration passed. New sample delay: 0x%x\n",
-				       nfi_read32(snf, SNF_DLY_CTL3));
-		}
-	}
 
 	if (raw) {
 		if (format) {
@@ -1096,7 +1025,7 @@ static int mtk_snand_program_load(struct mtk_snand *snf, uint32_t page,
 				  0, SNFI_POLL_INTERVAL);
 	if (ret) {
 		snand_log_nfi(snf->pdev,
-			      "Timed out waiting for BUS_SEC_CNTR\n");
+			      "Timed out waiting for NFI_SEC_CNTR\n");
 		goto cleanup;
 	}
 
@@ -1766,7 +1695,7 @@ static int mtk_snand_setup(struct mtk_snand *snf,
 
 	/* Tuning options */
 	nfi_write16(snf, NFI_DEBUG_CON1, WBUF_EN);
-	nfi_write32(snf, SNF_DLY_CTL3, (snf->nfi_soc->sample_delay << SFCK_SAM_DLY_S));
+	nfi_write32(snf, SNF_DLY_CTL3, (40 << SFCK_SAM_DLY_S));
 
 	/* Interrupts */
 	nfi_read32(snf, NFI_INTR_STA);
