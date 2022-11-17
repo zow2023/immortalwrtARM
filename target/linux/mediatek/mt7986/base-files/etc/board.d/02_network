@@ -48,10 +48,11 @@ mediatek_setup_macs()
 
 	
 	wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
-	lan_mac=$(mtd_get_mac_binary $part_name $lan_mac_offset)
+	
 	case $board in
  	xiaomi,redmi-router-ax6000)
  		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
+ 		lan_mac=$(macaddr_add "$wan_mac" 1)
  		;;
  	esac
 
@@ -70,6 +71,7 @@ mediatek_setup_macs()
 		[ -n "$wan_mac" ] && ucidef_set_interface_macaddr "wan" "$wan_mac"
 	;;
 	esac
+	
 }
 
 board_config_update

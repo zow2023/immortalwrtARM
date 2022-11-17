@@ -395,7 +395,9 @@ unsigned int do_hnat_ext_to_ge(struct sk_buff *skb, const struct net_device *in,
 		}
 
 		/*set where we come from*/
-		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), in->ifindex & VLAN_VID_MASK);
+		skb->vlan_proto = htons(ETH_P_8021Q);
+		skb->vlan_tci =
+			(VLAN_CFI_MASK | (in->ifindex & VLAN_VID_MASK));
 		trace_printk(
 			"%s: vlan_prot=0x%x, vlan_tci=%x, in->name=%s, skb->dev->name=%s\n",
 			__func__, ntohs(skb->vlan_proto), skb->vlan_tci,
@@ -426,7 +428,7 @@ unsigned int do_hnat_ext_to_ge2(struct sk_buff *skb, const char *func)
 		skb->dev = dev;
 		skb->vlan_proto = 0;
 		skb->vlan_tci = 0;
-		__vlan_hwaccel_clear_tag(skb);
+
 		if (ntohs(eth->h_proto) == ETH_P_8021Q) {
 			skb = skb_vlan_untag(skb);
 			if (unlikely(!skb))
@@ -458,7 +460,6 @@ unsigned int do_hnat_ext_to_ge2(struct sk_buff *skb, const char *func)
 				set_from_mape(skb);
 				skb->vlan_proto = 0;
 				skb->vlan_tci = 0;
-				__vlan_hwaccel_clear_tag(skb);
 				fix_skb_packet_type(skb, skb->dev, eth_hdr(skb));
 				entry = &hnat_priv->foe_table_cpu[skb_hnat_ppe(skb)][skb_hnat_entry(skb)];
 				entry->bfib1.pkt_type = IPV4_HNAPT;
@@ -655,7 +656,9 @@ unsigned int do_hnat_mape_w2l_fast(struct sk_buff *skb, const struct net_device 
 		eth->h_proto = htons(ETH_P_IP);
 		set_to_ppe(skb);
 
-		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), in->ifindex & VLAN_VID_MASK);
+		skb->vlan_proto = htons(ETH_P_8021Q);
+		skb->vlan_tci =
+		(VLAN_CFI_MASK | (in->ifindex & VLAN_VID_MASK));
 
 		if (!hnat_priv->g_ppdev)
 			hnat_priv->g_ppdev = dev_get_by_name(&init_net, hnat_priv->ppd);
@@ -680,7 +683,7 @@ static unsigned int is_ppe_support_type(struct sk_buff *skb)
 	struct iphdr _iphdr;
 
 	eth = eth_hdr(skb);
-	if ( !IS_SPACE_AVAILABLE_HEAD(skb) ||
+	if (!is_magic_tag_valid(skb) || !IS_SPACE_AVAILABLE_HEAD(skb) ||
 	    is_broadcast_ether_addr(eth->h_dest))
 		return 0;
 
@@ -1486,7 +1489,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			gmac = (IS_GMAC1_MODE) ? NR_GMAC1_PORT : NR_GMAC2_PORT;
 		}
 	} else if (IS_EXT(dev) && (FROM_GE_PPD(skb) || FROM_GE_LAN_GRP(skb) ||
-		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb) || FROM_EXT(skb))) {
+		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb))) {
 		if (!hnat_priv->data->whnat && IS_GMAC1_MODE) {
 			entry.bfib1.vpm = 1;
 			entry.bfib1.vlan_layer = 1;
@@ -1636,7 +1639,13 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	if (skb_hnat_alg(skb) || !is_hnat_info_filled(skb) ||
 	    !is_magic_tag_valid(skb) || !IS_SPACE_AVAILABLE_HEAD(skb))
 		return NF_ACCEPT;
-		
+
+	trace_printk(
+		"[%s]entry=%x reason=%x gmac_no=%x wdmaid=%x rxid=%x wcid=%x bssid=%x\n",
+		__func__, skb_hnat_entry(skb), skb_hnat_reason(skb), gmac_no,
+		skb_hnat_wdma_id(skb), skb_hnat_bss_id(skb),
+		skb_hnat_wc_id(skb), skb_hnat_rx_id(skb));
+
 	if ((gmac_no != NR_WDMA0_PORT) && (gmac_no != NR_WDMA1_PORT) &&
 	    (gmac_no != NR_WHNAT_WDMA_PORT))
 		return NF_ACCEPT;
@@ -1688,7 +1697,21 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		break;
 	}
 
-	
+	if (skb->vlan_tci) {
+		bfib1_tx.vlan_layer = 1;
+		bfib1_tx.vpm = 1;
+		if (IS_IPV4_GRP(entry)) {
+			entry->ipv4_hnapt.etype = htons(ETH_P_8021Q);
+			entry->ipv4_hnapt.vlan1 = skb->vlan_tci;
+		} else if (IS_IPV6_GRP(entry)) {
+			entry->ipv6_5t_route.etype = htons(ETH_P_8021Q);
+			entry->ipv6_5t_route.vlan1 = skb->vlan_tci;
+		}
+	} else {
+		bfib1_tx.vpm = 0;
+		bfib1_tx.vlan_layer = 0;
+	}
+
 	/* MT7622 wifi hw_nat not support QoS */
 	if (IS_IPV4_GRP(entry)) {
 		entry->ipv4_hnapt.iblk2.fqos = 0;

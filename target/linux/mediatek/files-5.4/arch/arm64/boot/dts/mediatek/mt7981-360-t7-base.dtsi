@@ -92,7 +92,6 @@
 
 &gsw {
 	mediatek,mdio = <&mdio>;
-	mediatek,portmap = "lllwl";
 	mediatek,mdio_master_pinmux = <0>;
 	reset-gpios = <&pio 39 0>;
 	interrupt-parent = <&pio>;
@@ -127,7 +126,6 @@
 	mtketh-wan = "eth1";
 	mtketh-lan = "eth0";
 	mtketh-max-gmac = <2>;
-	mtketh-ppe-num = <2>;
 	status = "okay";
 };
 

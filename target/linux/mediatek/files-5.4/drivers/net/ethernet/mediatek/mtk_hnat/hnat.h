@@ -746,9 +746,9 @@ struct foe_entry {
 /* If user wants to change default FOE entry number, both DEF_ETRY_NUM and
  * DEF_ETRY_NUM_CFG need to be modified.
  */
-#define DEF_ETRY_NUM		16384
+#define DEF_ETRY_NUM		32768
 /* feasible values : 32768, 16384, 8192, 4096, 2048, 1024 */
-#define DEF_ETRY_NUM_CFG	TABLE_16K
+#define DEF_ETRY_NUM_CFG	TABLE_32K
 /* corresponding values : TABLE_32K, TABLE_16K, TABLE_8K, TABLE_4K, TABLE_2K,
  * TABLE_1K
  */
@@ -1009,8 +1009,6 @@ enum FoeIpAct {
 #else
 #define NR_WHNAT_WDMA_PORT 3
 #define NR_PPE0_PORT 4
-#define NR_PPE1_PORT 5
-#define NR_PPE2_PORT 0xC
 #endif
 #define NR_QDMA_PORT 5
 #define NR_DISCARD 7

@@ -35,6 +35,12 @@ else
 		cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' /sys/class/thermal/thermal_zone0/temp)"
 fi
 
-
-	echo -n "ARM V8  x ${cpu_cores} (${big_cpu_freq}${cpu_freq})"
-
+if [ -z "${cpu_freq}" ] && [ -z "${cpu_temp}" ]; then
+	echo -n "${cpu_arch} x ${cpu_cores}"
+elif [ -z "${cpu_temp}" ] || grep -Eq "ipq|mt7622" "/etc/openwrt_release"; then
+	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq})"
+elif [ -z "${cpu_freq}" ]; then
+	echo -n "${cpu_arch} x ${cpu_cores} (${cpu_temp})"
+else
+	echo -n "${cpu_arch} x ${cpu_cores} (${big_cpu_freq}${cpu_freq}, ${cpu_temp})"
+fi
