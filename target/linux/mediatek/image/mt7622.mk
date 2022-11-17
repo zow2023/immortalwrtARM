@@ -76,7 +76,7 @@ define Device/xiaomi_redmi-router-ax6s
    DEVICE_DTS := mt7622-xiaomi-redmi-router-ax6s
    DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
    BOARD_NAME := xiaomi,redmi-router-ax6s
-   DEVICE_PACKAGES :=luci-app-mtwifi l1profile wireless-tools  kmod-mt7622 kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm
+   DEVICE_PACKAGES :=luci-app-mtwifi l1profile wireless-tools  kmod-mt7622 kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm luci-app-turboacc-mtk
    UBINIZE_OPTS := -E 5
    IMAGES += factory.bin
    BLOCKSIZE := 128k
