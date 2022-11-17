@@ -71,7 +71,6 @@ mediatek_setup_macs()
 		[ -n "$wan_mac" ] && ucidef_set_interface_macaddr "wan" "$wan_mac"
 	;;
 	esac
-	
 }
 
 board_config_update

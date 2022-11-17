@@ -9,8 +9,6 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=warp
 P4REV:=
 PKG_VERSION:=
-PKG_SOURCE:=warp_20220425-d15d0a-obj.tar.xz
-PKG_SOURCE_URL:=
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \
 	WARP_VERSION \
@@ -32,7 +30,9 @@ TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
 define KernelPackage/warp
   CATEGORY:=MTK Properties
   TITLE:=MTK warp driver
+#ifneq ($(CONFIG_NET_MEDIATEK_HNAT), )
   DEPENDS:= +kmod-mediatek_hnat
+#endif
   FILES:=$(PKG_BUILD_DIR)/mtk_warp.ko
   AUTOLOAD:=$(call AutoLoad,60,mtk_warp,1)
   SUBMENU:=Drivers

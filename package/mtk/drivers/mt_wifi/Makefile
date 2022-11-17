@@ -8,10 +8,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mt_wifi
 P4REV:=
-PKG_VERSION:=7.6.4.1
-PKG_SOURCE:=mt7981_20220425-4c770b-obj.tar.xz
-PKG_BUILD_PARALLEL:=1
-PKG_SOURCE_URL:=
+PKG_VERSION:=TEST
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \
 	AP_SUPPORT \
@@ -265,12 +262,34 @@ TAR_CMD=$(HOST_TAR) -C $(1)/ $(TAR_OPTIONS)
 define KernelPackage/mt_wifi
   CATEGORY:=MTK Properties
   TITLE:=MTK wifi AP driver
+ifeq ($(CONFIG_MTK_CONNINFRA_APSOC),y)
   DEPENDS+=+kmod-conninfra
+endif
+ifneq ($(CONFIG_MTK_FAST_NAT_SUPPORT), )
+ifneq ($(CONFIG_NET_MEDIATEK_HNAT), )
   DEPENDS+=+kmod-mediatek_hnat
+endif
+endif
+ifneq ($(CONFIG_MTK_WHNAT_SUPPORT), )
+ifneq ($(CONFIG_MTK_WARP_V2), )
   FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
 	$(PKG_BUILD_DIR)/mt_wifi_ap/mtk_warp_proxy.ko
   DEPENDS+=+kmod-warp
   AUTOLOAD:=$(call AutoProbe,mt_wifi mtk_warp_proxy)
+else
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko \
+	$(PKG_BUILD_DIR)/mt_wifi/embedded/plug_in/whnat/mt_whnat.ko
+  AUTOLOAD:=$(call AutoProbe,mt_wifi mt_whnat)
+endif
+else
+  FILES:=$(PKG_BUILD_DIR)/mt_wifi_ap/mt_wifi.ko
+  AUTOLOAD:=$(call AutoProbe,mt_wifi)
+endif
+ifeq ($(CONFIG_MTK_CONNINFRA_APSOC),y)
+ifeq ($(CONFIG_FPGA_EARLY_PORTING),y)
+  AUTOLOAD:=
+endif
+endif
   SUBMENU:=Drivers
   MENU:=1
 endef
@@ -281,8 +300,8 @@ endef
 
 
 define Build/Compile
-	+$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
-		$(KERNEL_MAKE_FLAGS) \
+	$(MAKE) $(PKG_JOBS) -C "$(LINUX_DIR)" \
+ 		$(KERNEL_MAKE_FLAGS) \
 		M="$(PKG_BUILD_DIR)/mt_wifi_ap" \
 		LINUX_DIR="$(KERNEL_BUILD_DIR)" \
 		$(foreach c, $(PKG_KCONFIG),$(if $(CONFIG_MTK_$c),CONFIG_$(c)=$(CONFIG_MTK_$(c)))) \
@@ -303,7 +322,7 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr.bin \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_mt7975.bin \
 		$(PKG_BUILD_DIR)/bin/mt7986/rebb/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
-		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" -o "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX8400" ] ; then \
+		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" -o "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" ] ; then \
 			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX6000.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX6000.bin \
 			$(1)/lib/firmware/; \
 		fi; \

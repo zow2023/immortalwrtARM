@@ -1,8 +1,8 @@
 Default
-INDEX0=MT7981
+INDEX0=MT7986
 INDEX0_profile_path=/etc/wireless/mt7615/mt7615.1.dat;/etc/wireless/mt7615/mt7615.2.dat
 INDEX0_EEPROM_offset=0x0
-INDEX0_EEPROM_size=0x5000
+INDEX0_EEPROM_size=0xA0000
 INDEX0_EEPROM_name=e2p
 INDEX0_main_ifname=ra0;rai0
 INDEX0_ext_ifname=ra;rai
