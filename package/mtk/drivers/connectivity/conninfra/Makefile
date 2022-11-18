@@ -5,12 +5,13 @@
 # See /LICENSE for more information.
 #
 
-
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=conninfra
 PKG_VERSION:=
+PKG_SOURCE:=mt7981_conninfra_20220425-bbf588-obj.tar.xz
+PKG_SOURCE_URL:=
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_MAINTAINER:=Kun-Ze Syue<kun-ze.syue@mediatek.com>
 
