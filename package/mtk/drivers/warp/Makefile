@@ -30,9 +30,7 @@ TAR_CMD=$(HOST_TAR) -C $(1)/.. $(TAR_OPTIONS)
 define KernelPackage/warp
   CATEGORY:=MTK Properties
   TITLE:=MTK warp driver
-#ifneq ($(CONFIG_NET_MEDIATEK_HNAT), )
   DEPENDS:= +kmod-mediatek_hnat
-#endif
   FILES:=$(PKG_BUILD_DIR)/mtk_warp.ko
   AUTOLOAD:=$(call AutoLoad,60,mtk_warp,1)
   SUBMENU:=Drivers
