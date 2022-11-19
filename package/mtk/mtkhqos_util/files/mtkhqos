@@ -33,7 +33,8 @@ echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
 echo 0 > /proc/sys/net/bridge/bridge-nf-filter-pppoe-tagged
 echo 0 > /proc/sys/net/bridge/bridge-nf-filter-vlan-tagged
 echo 0 > /proc/sys/net/bridge/bridge-nf-pass-vlan-input-dev
-
+echo 32768 > /proc/sys/net/netfilter/nf_conntrack_buckets
+echo 512 > /proc/sys/net/netfilter/nf_conntrack_expect_max
 dbg() {
 	if [ "$debug" = "1" ]; then
 		echo "$1"
