@@ -6,3 +6,4 @@ nopcomp
 nocrtscts
 lock
 maxfail 0
+lcp-echo-failure 5
