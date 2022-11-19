@@ -33,7 +33,7 @@ echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
 echo 0 > /proc/sys/net/bridge/bridge-nf-filter-pppoe-tagged
 echo 0 > /proc/sys/net/bridge/bridge-nf-filter-vlan-tagged
 echo 0 > /proc/sys/net/bridge/bridge-nf-pass-vlan-input-dev
-
+echo 512 > /proc/sys/net/netfilter/nf_conntrack_expect_max
 dbg() {
 	if [ "$debug" = "1" ]; then
 		echo "$1"
@@ -96,9 +96,7 @@ echo ${sch2_enable} $(sch_mode2str $sch2_mode) ${sch2_bw} > $hqos_path/qdma_sch2
 dbg "sch3: ${sch3_enable}, mode: $(sch_mode2str $sch3_mode), bw: ${sch3_bw}"
 echo ${sch3_enable} $(sch_mode2str $sch3_mode) ${sch3_bw} > $hqos_path/qdma_sch3
 
-# enable bridge netfilter module to allow skb being marked
-echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
-echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
+
 
 setup_queue() {
 	local queue_id queue_scheduler queue_minebl queue_maxebl sch_bw
