@@ -790,6 +790,9 @@ function apcli_connect(dev, vif)
     os.execute("ifdown wan")
     os.execute("ifup wan")
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
+    os.execute("iwpriv rai0 set hw_nat_register=0")
+    os.execute("iwpriv rax0 set hw_nat_register=0")
+    os.execute("iwpriv ra0 set hw_nat_register=0")
 end
 
 function apcli_disconnect(dev, vif)
@@ -821,5 +824,8 @@ function apcli_disconnect(dev, vif)
     os.execute("ifdown wan")
     os.execute("ifup wan") 
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
+    os.execute("iwpriv rai0 set hw_nat_register=1")
+    os.execute("iwpriv rax0 set hw_nat_register=1")
+    os.execute("iwpriv ra0 set hw_nat_register=1")
 end
 
