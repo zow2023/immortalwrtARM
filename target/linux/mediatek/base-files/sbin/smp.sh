@@ -709,7 +709,6 @@ setup_model()
 	mt_whnat_en=$(module_exist "mt_whnat")
 
 	case $board in
-	*mi* |\
 	*7986*)
 		MT7986_whnat $num_of_wifi
 		;;
