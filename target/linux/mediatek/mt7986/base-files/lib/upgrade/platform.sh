@@ -130,6 +130,7 @@ platform_do_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
+	xiaomi,redmi-router-ax6000-uboot |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -154,6 +155,7 @@ platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 
 	case "$board" in
+	xiaomi,redmi-router-ax6000-uboot |\
 	xiaomi,redmi-router-ax6000 |\
 	*snand* |\
 	*emmc*)

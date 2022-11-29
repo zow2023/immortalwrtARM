@@ -19,7 +19,8 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
 		;;
-	xiaomi,redmi-router-ax6000)
+	xiaomi,redmi-router-ax6000|\
+ 	xiaomi,redmi-router-ax6000-uboot)
 		ucidef_set_interfaces_lan_wan "eth0 ra0 rai0" "eth1"
  		ucidef_add_switch "switch0" \
 				  "1:lan:4" "2:lan:3" "3:lan:2"  "4:wan" "6u@eth0" "5u@eth1"
@@ -50,7 +51,8 @@ mediatek_setup_macs()
 	wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
 	
 	case $board in
- 	xiaomi,redmi-router-ax6000)
+ 	xiaomi,redmi-router-ax6000|\
+ 	xiaomi,redmi-router-ax6000-uboot)
  		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
  		lan_mac=$(macaddr_add "$wan_mac" 1)
  		;;
