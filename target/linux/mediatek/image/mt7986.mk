@@ -353,3 +353,31 @@ define Device/mediatek_mt7986-fpga-ubi
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += mediatek_mt7986-fpga-ubi
+
+
+define Device/xiaomi_redmi-router-ax6000-uboot
+   DEVICE_VENDOR := Xiaomi
+   DEVICE_MODEL := Redmi Router AX6000 (uboot layout)
+   DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000-uboot
+   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+   DEVICE_PACKAGES :=luci-app-mtwifi l1profile wireless-tools kmod-conninfra kmod-warpkmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util
+   UBINIZE_OPTS := -E 5
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+   KERNEL_IN_UBI := 1
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ endef
+ TARGET_DEVICES += xiaomi_redmi-router-ax6000-uboot
+
+define Device/xiaomi_redmi-router-ax6000
+   DEVICE_VENDOR := Xiaomi
+   DEVICE_MODEL := Redmi Router AX6000
+   DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000
+   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+   DEVICE_PACKAGES :=luci-app-mtwifi l1profile wireless-tools kmod-conninfra kmod-warpkmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util
+   UBINIZE_OPTS := -E 5
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ endef
+ TARGET_DEVICES += xiaomi_redmi-router-ax6000
