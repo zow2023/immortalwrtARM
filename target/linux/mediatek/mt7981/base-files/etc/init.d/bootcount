@@ -3,11 +3,11 @@
 START=99
 
 boot() {
-	ifconfig apclii0 up
-	ifconfig rai0 up
-	/etc/init.d/apcli.sh start
-	mtkwifi reload
-	/sbin/smp.sh
+	ifconfig eth1 down
+	ifconfig eth1 up
+	ifconfig wan down
+	ifconfig wan up
+        /sbin/smp.sh
 	case $(board_name) in
 	linksys,e8450)
 		mtd erase senv || true

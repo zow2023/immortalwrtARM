@@ -4,6 +4,10 @@ START=99
 
 boot() {
         /sbin/smp.sh
+        ifconfig eth1 down
+        ifconfig eth1 up
+        ifconfig wan down
+        ifconfig wan up
 	case $(board_name) in
 	linksys,e8450)
 		mtd erase senv || true
