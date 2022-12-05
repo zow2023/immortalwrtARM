@@ -16,6 +16,7 @@
 ]]
 
 require("datconf")
+local inspect = require "inspect"
 local ioctl_help = require "ioctl_helper"
 local mtkwifi = {}
 local logDisable = 0
@@ -210,6 +211,13 @@ function mtkwifi.save_profile(cfgs, path)
     if not cfgs then
         debug_write("configuration was empty, nothing saved")
         return
+    end
+
+    local diff = mtkwifi.diff_profile(path)
+
+    if next(diff) then
+        nixio.syslog("info", "mtkwifi wifi profile diff:")
+        nixio.syslog("info", inspect(diff))
     end
 
     -- Keep a backup of last profile settings
@@ -1155,6 +1163,7 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         vifs[j].__vht_stbc = mtkwifi.token_get(cfgs.VHT_STBC, j, mtkwifi.__split(cfgs.VHT_STBC,";")[1])
         vifs[j].__vht_ldpc = mtkwifi.token_get(cfgs.VHT_LDPC, j, mtkwifi.__split(cfgs.VHT_LDPC,";")[1])
         vifs[j].__dls_capable = mtkwifi.token_get(cfgs.DLSCapable, j, mtkwifi.__split(cfgs.DLSCapable,";")[1])
+        vifs[j].__rrmenable = mtkwifi.token_get(cfgs.RRMEnable, j, mtkwifi.__split(cfgs.RRMEnable,";")[1])
         vifs[j].__apsd_capable = mtkwifi.token_get(cfgs.APSDCapable, j, mtkwifi.__split(cfgs.APSDCapable,";")[1])
         vifs[j].__frag_threshold = mtkwifi.token_get(cfgs.FragThreshold, j, mtkwifi.__split(cfgs.FragThreshold,";")[1])
         vifs[j].__rts_threshold = mtkwifi.token_get(cfgs.RTSThreshold, j, mtkwifi.__split(cfgs.RTSThreshold,";")[1])
