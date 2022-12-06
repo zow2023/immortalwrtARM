@@ -12,7 +12,6 @@ LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-mtk
 PKG_VERSION:=2.0
 PKG_RELEASE:=1
-
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
