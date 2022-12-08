@@ -4,11 +4,4 @@ START=99
 
 boot() {
         /sbin/smp.sh
-        sleep 2
-        ifconfig wan down
-        sleep 2
-        ifconfig eth1 down
-        ifconfig eth1 up
-        sleep 2
-        ifconfig wan up
 }
