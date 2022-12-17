@@ -17,8 +17,8 @@ echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables
 echo 0 > /proc/sys/net/bridge/bridge-nf-filter-pppoe-tagged
 echo 0 > /proc/sys/net/bridge/bridge-nf-filter-vlan-tagged
 echo 0 > /proc/sys/net/bridge/bridge-nf-pass-vlan-input-dev
-echo 16384 > /proc/sys/net/netfilter/nf_conntrack_buckets
-echo 512 > /proc/sys/net/netfilter/nf_conntrack_expect_max
+echo 32768 > /proc/sys/net/netfilter/nf_conntrack_buckets
+echo 16384 > /proc/sys/net/netfilter/nf_conntrack_expect_max
 #if hnat is not exist, switch module to mtk_ppe
 module=hnat
 [ -d /sys/kernel/debug/${module} ] || {

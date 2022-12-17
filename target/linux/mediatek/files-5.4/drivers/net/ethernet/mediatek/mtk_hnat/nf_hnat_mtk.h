@@ -74,9 +74,9 @@ struct hnat_desc {
 	u32 filled : 3;
 	u32 resv : 1;
 	u32 magic_tag_protect : 16;
-	u32 wdmaid : 2;
+	u32 wdmaid : 8;
 	u32 rxid : 2;
-	u32 wcid : 10;
+	u32 wcid : 8;
 	u32 bssid : 6;
 } __packed;
 #endif
@@ -158,6 +158,10 @@ struct hnat_desc {
 #define HIT_PRE_BIND 0x1A
 #define HIT_BIND_PACKET_SAMPLING 0x1B
 #define HIT_BIND_EXCEED_MTU 0x1C
+
+#define TPORT_ID(x) ((x) & GENMASK(3, 0))
+#define TOPS_ENTRY(x) ((x) & GENMASK(5, 0))
+#define CDRT_ID(x) ((x) & GENMASK(7, 0))
 
 u32 hnat_tx(struct sk_buff *skb);
 u32 hnat_set_skb_info(struct sk_buff *skb, u32 *rxd);
