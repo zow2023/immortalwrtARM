@@ -74,9 +74,9 @@ struct hnat_desc {
 	u32 filled : 3;
 	u32 resv : 1;
 	u32 magic_tag_protect : 16;
-	u32 wdmaid : 8;
+	u32 wdmaid : 2;
 	u32 rxid : 2;
-	u32 wcid : 8;
+	u32 wcid : 10;
 	u32 bssid : 6;
 } __packed;
 #endif
