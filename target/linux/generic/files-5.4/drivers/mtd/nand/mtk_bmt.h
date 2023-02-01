@@ -96,7 +96,14 @@ bbt_nand_read(u32 page, unsigned char *dat, int dat_len,
 		.len = dat_len,
 	};
 
-	return bmtd._read_oob(bmtd.mtd, page << bmtd.pg_shift, &ops);
+	int ret;
+
+ 	ret = bmtd._read_oob(bmtd.mtd, page << bmtd.pg_shift, &ops);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret)
+ 		pr_info("%s: %d bitflips\n", __func__, ret);
+ 	return 0;
 }
 
 static inline int bbt_nand_erase(u16 block)
