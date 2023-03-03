@@ -801,9 +801,9 @@ struct foe_entry {
 /* If user wants to change default FOE entry number, both DEF_ETRY_NUM and
  * DEF_ETRY_NUM_CFG need to be modified.
  */
-#define DEF_ETRY_NUM		16384
+#define DEF_ETRY_NUM		32768
 /* feasible values : 32768, 16384, 8192, 4096, 2048, 1024 */
-#define DEF_ETRY_NUM_CFG	TABLE_16K
+#define DEF_ETRY_NUM_CFG	TABLE_32K
 /* corresponding values : TABLE_32K, TABLE_16K, TABLE_8K, TABLE_4K, TABLE_2K,
  * TABLE_1K
  */
@@ -890,6 +890,8 @@ struct mtk_hnat {
 	struct timer_list hnat_reset_timestamp_timer;
 	struct timer_list hnat_mcast_check_timer;
 	bool nf_stat_en;
+	bool ipv6_en;
+ 	bool guest_en;
 };
 
 struct extdev_entry {

@@ -233,6 +233,10 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 	switch (event) {
 	case NETDEV_UP:
+		if (!hnat_priv->guest_en && dev->name) {
+ 			if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rai1"))
+ 				break;
+ 		}
 		gmac_ppe_fwd_enable(dev);
 
 		extif_set_dev(dev);
@@ -295,7 +299,7 @@ void foe_clear_entry(struct neighbour *neigh)
 				*((u32 *)h_dest) = swab32(entry->ipv4_hnapt.dmac_hi);
 				*((u16 *)&h_dest[4]) =
 					swab16(entry->ipv4_hnapt.dmac_lo);
-				if (strncmp(h_dest, neigh->ha, ETH_ALEN) != 0) {
+				if (!ether_addr_equal(h_dest, neigh->ha)) {
 					pr_info("%s: state=%d\n", __func__,
 						neigh->nud_state);
 					cr_set_field(hnat_priv->ppe_base[i] + PPE_TB_CFG,
@@ -1967,6 +1971,10 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 	int i, number = 0;
 	struct extdev_entry *ext_entry;
 
+	if (!hnat_priv->guest_en && dev->name) {
+ 		if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rax1"))
+ 			return;
+ 	}
 	for (i = 1; i < MAX_IF_NUM; i++) {
 		if (hnat_priv->wifi_hook_if[i] == dev) {
 			pr_info("%s : %s has been registered in wifi_hook_if table[%d]\n",
@@ -2116,6 +2124,10 @@ static unsigned int mtk_hnat_nf_post_routing(
 	struct flow_offload_hw_path hw_path = { .dev = (struct net_device*)out,
 						.virt_dev = (struct net_device*)out };
 	const struct net_device *arp_dev = out;
+	
+	if (skb->protocol == htons(ETH_P_IPV6) && !hnat_priv->ipv6_en) {
+ 		return 0;
+ 	}
 
 	if (skb_hnat_alg(skb) || unlikely(!is_magic_tag_valid(skb) ||
 					  !IS_SPACE_AVAILABLE_HEAD(skb)))
