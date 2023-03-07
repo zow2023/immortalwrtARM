@@ -391,17 +391,19 @@ static int extphy_init(struct mtk_eth *eth, int addr)
 	{
 		extphy = &extphy_tbl[i];
 		if (extphy->is_c45)
-		{
+		{	
 			phy_id = get_cl45_phy_id(eth, addr);
+		
 		}
 		else
-		{
+		{	
 			phy_id = get_cl22_phy_id(eth, addr);
+			
 		}
 
 		if (phy_id_is_match(phy_id, extphy))
 			{extphy->init(eth, addr);}
-		else {dev_info(eth->dev, "RTL822x test1\n");}
+		
 	 	
 	}
 
@@ -3858,6 +3860,7 @@ static int mtk_probe(struct platform_device *pdev)
 			ret = devm_gpio_request(&pdev->dev, ext_reset_pin, "mt753x-reset");
 			if (!ret)
 			{
+				
 				gpio_direction_output(ext_reset_pin, 0);
 				msleep(300);
 				gpio_set_value(ext_reset_pin, 1);
@@ -3964,7 +3967,7 @@ static int mtk_probe(struct platform_device *pdev)
     {
 		// For TP-Link XDR6086 and XDR6088, we have two RTL822X at reg 5 and reg 7 respectively.
         	//extphy_init(eth, 5);
-        dev_info(eth->dev, "RTL822x test0\n");
+        
 	extphy_init(eth, 7);
         ext_init = 1;
     }
