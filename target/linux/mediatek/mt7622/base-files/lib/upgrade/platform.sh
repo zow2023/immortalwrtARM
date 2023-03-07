@@ -8,6 +8,7 @@ platform_do_upgrade() {
 		get_image "$1" | dd of=/dev/mmcblk0 bs=2097152 seek=1 conv=fsync
 		;;
 	mediatek,mt7622,ubi|\
+	netgear,wax206|\
  	xiaomi,redmi-router-ax6s)
 		nand_do_upgrade "$1"
 		;;
@@ -26,6 +27,7 @@ platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 
 	case "$board" in
+	netgear,wax206|\
 	xiaomi,redmi-router-ax6s)
 		nand_do_platform_check "$board" "$1"
 		;;

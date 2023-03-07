@@ -86,3 +86,21 @@ define Device/xiaomi_redmi-router-ax6s
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += xiaomi_redmi-router-ax6s
+
+define Device/netgear_wax206
+   DEVICE_VENDOR := NETGEAR
+   DEVICE_MODEL := WAX206
+   DEVICE_DTS := mt7622-netgear-wax206
+   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+   NETGEAR_ENC_MODEL := WAX206
+   NETGEAR_ENC_REGION := US
+   DEVICE_PACKAGES :=luci-app-mtwifi l1profile wireless-tools  kmod-mt7622 kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm luci-app-turboacc-mtk
+   UBINIZE_OPTS := -E 5
+   IMAGES += factory.bin
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+   KERNEL_SIZE :=6144k
+   IMAGE_SIZE := 32768k 
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += netgear_wax206
