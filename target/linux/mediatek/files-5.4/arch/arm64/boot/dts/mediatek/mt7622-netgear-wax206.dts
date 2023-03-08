@@ -614,7 +614,7 @@
 
 		partition@2c0000 {
 			label = "firmware";
-			reg = <0x2c0000 0x2600000>;
+			reg = <0x2c0000 0x4c00000>;
 
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
@@ -627,15 +627,10 @@
 
 			partition@600000 {
 			label = "ubi";
-			reg = <0x600000 0x2000000>;
+			reg = <0x600000 0x4600000>;
 			};
 		};
 
-		partition@28c0000 {
-			label = "firmware_backup";
-			reg = <0x28c0000 0x2600000>;
-			read-only;
-			};
 
 		partition@4ec0000 {
 			label = "CFG";
