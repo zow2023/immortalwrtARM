@@ -26,7 +26,9 @@ mediatek_setup_interfaces()
 				  "1:lan:4" "2:lan:3" "3:lan:2"  "4:wan" "6u@eth0" "5u@eth1"
 		;;
  	*)
-		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 lan4 lan5" eth1
+		ucidef_set_interfaces_lan_wan "ra0 rai0 eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
 		;;
 	esac
 }
