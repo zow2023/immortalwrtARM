@@ -41,6 +41,9 @@ ubnt,unifi-6-lr-ubootmod)
 xiaomi,redmi-router-ax6s)
  	ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x10000" "0x40000"
  	;;
+netgear,wax206)	
+	ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x2000" "0x80000"
+ 	;;
 esac
 
 config_load ubootenv
