@@ -374,7 +374,7 @@ define Device/xiaomi_redmi-router-ax6000
    DEVICE_MODEL := Redmi Router AX6000
    DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000
    DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util kmod-leds-ws2812b
+   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util kmod-leds-ws2812b wifi-profile
    UBINIZE_OPTS := -E 5
    BLOCKSIZE := 128k
    PAGESIZE := 2048
@@ -385,7 +385,7 @@ TARGET_DEVICES += xiaomi_redmi-router-ax6000
 define Device/tplink_tl-common
    DEVICE_VENDOR := TP-Link
    DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util kmod-usb3
+   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util kmod-usb3 wifi-profile
    UBINIZE_OPTS := -E 5
    BLOCKSIZE := 128k
    PAGESIZE := 2048

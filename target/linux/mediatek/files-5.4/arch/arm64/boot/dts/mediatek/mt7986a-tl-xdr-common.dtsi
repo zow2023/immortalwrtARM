@@ -21,6 +21,25 @@
 		bootargs = "console=ttyS0,115200n1 loglevel=8 
 		earlycon=uart8250,mmio32,0x11002000";
 	};
+	
+	reg_3p3v: regulator-3p3v {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "fixed-3.3V";
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-boot-on;
+ 		regulator-always-on;
+ 	};
+
+ 	reg_5v: regulator-5v {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "fixed-5V";
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-boot-on;
+ 		regulator-always-on;
+ 	};
+
 	memory {
 		reg = <0 0x40000000 0 0x10000000>;
 	};
@@ -226,9 +245,14 @@
     status = "okay";
 };
 
+
 &xhci {
-         status = "okay";
- };
+	mediatek,u3p-dis-msk = <0x0>;
+	phys = <&u2port0 PHY_TYPE_USB2>,
+	       <&u3port0 PHY_TYPE_USB3>;
+	status = "okay";
+};
+
 
 &spi0 {
 	pinctrl-names = "default";

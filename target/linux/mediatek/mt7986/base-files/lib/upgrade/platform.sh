@@ -131,6 +131,8 @@ platform_do_upgrade() {
 
 	case "$board" in
 	xiaomi,redmi-router-ax6000-uboot |\
+	tplink,tl-xdr6086 |\
+	tplink,tl-xdr6088 |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
@@ -157,6 +159,8 @@ platform_check_image() {
 	case "$board" in
 	xiaomi,redmi-router-ax6000-uboot |\
 	xiaomi,redmi-router-ax6000 |\
+	tplink,tl-xdr6086 |\
+	tplink,tl-xdr6088 |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`
