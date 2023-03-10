@@ -18,7 +18,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/automount
   TITLE:=Mount autoconfig hotplug script.
   MAINTAINER:=Lean
-  DEPENDS:=+block-mount +kmod-fs-exfat0 +kmod-fs-ext4 +kmod-fs-vfat +ntfs-3g \
+  DEPENDS:=+block-mount +kmod-fs-exfat0 +kmod-fs-ext4 +kmod-fs-vfat +kmod-fs-ntfs3  \
 	+kmod-usb-storage +kmod-usb-storage-extras +!TARGET_ramips:kmod-usb-storage-uas
   PKGARCH:=all
 endef
