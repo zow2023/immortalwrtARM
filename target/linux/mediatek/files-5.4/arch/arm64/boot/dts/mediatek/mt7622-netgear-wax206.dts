@@ -129,7 +129,7 @@
  		};
 
  		wifin_green {
- 			default-state = "off";
+ 			default-state = "on";
  			gpios = <&pio 85 GPIO_ACTIVE_LOW>;
  			label = "wifin:green";
  		};
@@ -141,7 +141,7 @@
  		};
 
  		wifia_green {
- 			default-state = "off";
+ 			default-state = "on";
  			gpios = <&pio 2 GPIO_ACTIVE_HIGH>;
  			label = "wifia:green";
  		};
