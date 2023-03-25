@@ -194,6 +194,7 @@ define Device/mt7981-360-t7-108M
   DEVICE_MODEL := 360 T7 (with 108M ubi)
   DEVICE_DTS := mt7981-360-t7-108M
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util  wifi-profile 
   SUPPORTED_DEVICES := 360,t7
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
