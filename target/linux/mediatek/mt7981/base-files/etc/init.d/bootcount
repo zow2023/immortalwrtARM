@@ -4,4 +4,6 @@ START=99
 
 boot() {
         /sbin/smp.sh
+        sleep 60
+        /etc/init.d/kick.sh start
 }
