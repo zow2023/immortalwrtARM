@@ -4,6 +4,11 @@ platform_do_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
+        *wr30u* |\
+	*mt3000* |\
+	*x3000* |\
+	*xe3000* |\
+	*mt2500* |\
 	*360,t7* |\
 	*snand*)
 		nand_do_upgrade "$1"
@@ -26,6 +31,11 @@ platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 
 	case "$board" in
+        *wr30u* |\
+	*mt3000* |\
+	*x3000* |\
+	*xe3000* |\
+	*mt2500* |\
 	*360,t7* |\
 	*snand* |\
 	*emmc*)
