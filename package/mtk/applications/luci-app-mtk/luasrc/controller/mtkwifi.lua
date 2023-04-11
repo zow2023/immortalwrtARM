@@ -187,6 +187,7 @@ local __mtkwifi_reload = function (devname)
         debug_write("wifi restart "..(devname or ""))
     elseif wifi_reload then
         os.execute("wifi reload "..(devname or ""))
+        os.execute("/etc/init.d/kick.sh start")
         os.execute("/etc/init.d/mtkiappd start")
         debug_write("wifi reload "..(devname or ""))
     end
