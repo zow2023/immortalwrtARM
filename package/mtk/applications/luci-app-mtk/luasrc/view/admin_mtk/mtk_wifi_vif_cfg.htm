@@ -330,14 +330,14 @@ function hi(to, devname, vifname)
             <tbody id="PMF" style="display:none;">
                 <tr>
                     <td><%:MFPC%></td>
-                    <td> <input name="__pmfmfpc" id="__pmfmfpc" value="1"
+                    <td> <input name="__pmfmfpc" id="__pmfmfpc" value="0"
                         <% if mtkwifi.token_get(cfgs["PMFMFPC"], vifidx, 0) == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox"> </td>
                 </tr>
                 <tr>
                     <td><%:MFPR%></td>
-                    <td> <input name="__pmfmfpr" id="__pmfmfpr" value="1"
+                    <td> <input name="__pmfmfpr" id="__pmfmfpr" value="0"
                         <% if mtkwifi.token_get(cfgs["PMFMFPR"], vifidx, 0) == "1" then %>
                         checked="checked"
                         <% end %> type="checkbox"></td>
