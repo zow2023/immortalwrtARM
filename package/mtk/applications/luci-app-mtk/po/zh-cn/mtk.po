@@ -337,6 +337,9 @@ msgstr "上行MU-MIMO"
 msgid "SCAN WIRELESS NETWORK"
 msgstr "扫描无线网络"
 
+msgid "Scan Wireless Network"
+msgstr "扫描无线网络"
+
 msgid "ApClient Mode"
 msgstr "ApClient模式"
 

@@ -1159,22 +1159,22 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         }
         vifs[j].__wpapsk = cfgs["WPAPSK"..j]
         vifs[j].__ht_stbc = mtkwifi.token_get(cfgs.HT_STBC, j, mtkwifi.__split(cfgs.HT_STBC,";")[1])
-        vifs[j].__ht_ldpc = mtkwifi.token_get(cfgs.HT_LDPC, j, mtkwifi.__split(cfgs.HT_LDPC,";")[1])
-        vifs[j].__vht_stbc = mtkwifi.token_get(cfgs.VHT_STBC, j, mtkwifi.__split(cfgs.VHT_STBC,";")[1])
-        vifs[j].__vht_ldpc = mtkwifi.token_get(cfgs.VHT_LDPC, j, mtkwifi.__split(cfgs.VHT_LDPC,";")[1])
+        vifs[j].__ht_ldpc = mtkwifi.token_get(cfgs.HT_LDPC, j, mtkwifi.__split(cfgs.HT_LDPC,";")[1]) 
+        vifs[j].__vht_stbc = mtkwifi.token_get(cfgs.VHT_STBC, j, mtkwifi.__split(cfgs.VHT_STBC,";")[1]) 
+        vifs[j].__vht_ldpc = mtkwifi.token_get(cfgs.VHT_LDPC, j, mtkwifi.__split(cfgs.VHT_LDPC,";")[1]) 
         vifs[j].__dls_capable = mtkwifi.token_get(cfgs.DLSCapable, j, mtkwifi.__split(cfgs.DLSCapable,";")[1])
-        vifs[j].__rrmenable = mtkwifi.token_get(cfgs.RRMEnable, j, mtkwifi.__split(cfgs.RRMEnable,";")[1])
+        vifs[j].__rrmenable = mtkwifi.token_get(cfgs.RRMEnable, j, mtkwifi.__split(cfgs.RRMEnable,";")[1]) or "1f"
         vifs[j].__ftsupport = mtkwifi.token_get(cfgs.FtSupport, j, mtkwifi.__split(cfgs.FtSupport,";")[1])
         vifs[j].__apsd_capable = mtkwifi.token_get(cfgs.APSDCapable, j, mtkwifi.__split(cfgs.APSDCapable,";")[1])
         vifs[j].__frag_threshold = mtkwifi.token_get(cfgs.FragThreshold, j, mtkwifi.__split(cfgs.FragThreshold,";")[1])
         vifs[j].__rts_threshold = mtkwifi.token_get(cfgs.RTSThreshold, j, mtkwifi.__split(cfgs.RTSThreshold,";")[1])
         vifs[j].__vht_sgi = mtkwifi.token_get(cfgs.VHT_SGI, j, mtkwifi.__split(cfgs.VHT_SGI,";")[1])
         vifs[j].__vht_bw_signal = mtkwifi.token_get(cfgs.VHT_BW_SIGNAL, j, mtkwifi.__split(cfgs.VHT_BW_SIGNAL,";")[1])
-        vifs[j].__ht_protect = mtkwifi.token_get(cfgs.HT_PROTECT, j, mtkwifi.__split(cfgs.HT_PROTECT,";")[1])
+        vifs[j].__ht_protect = mtkwifi.token_get(cfgs.HT_PROTECT, j, mtkwifi.__split(cfgs.HT_PROTECT,";")[1]) 
         vifs[j].__ht_gi = mtkwifi.token_get(cfgs.HT_GI, j, mtkwifi.__split(cfgs.HT_GI,";")[1])
         vifs[j].__ht_opmode = mtkwifi.token_get(cfgs.HT_OpMode, j, mtkwifi.__split(cfgs.HT_OpMode,";")[1])
         vifs[j].__ht_amsdu = mtkwifi.token_get(cfgs.HT_AMSDU, j, mtkwifi.__split(cfgs.HT_AMSDU,";")[1])
-        vifs[j].__ht_autoba = mtkwifi.token_get(cfgs.HT_AutoBA, j, mtkwifi.__split(cfgs.HT_AutoBA,";")[1])
+        vifs[j].__ht_autoba = mtkwifi.token_get(cfgs.HT_AutoBA, j, mtkwifi.__split(cfgs.HT_AutoBA,";")[1]) 
         vifs[j].__igmp_snenable = mtkwifi.token_get(cfgs.IgmpSnEnable, j, mtkwifi.__split(cfgs.IgmpSnEnable,";")[1])
         vifs[j].__wdsenable = mtkwifi.token_get(cfgs.WdsEnable, j, mtkwifi.__split(cfgs.WdsEnable,";")[1])
 
@@ -1190,10 +1190,10 @@ function mtkwifi.__setup_vifs(cfgs, devname, mainidx, subidx)
         vifs[vifs[j].vifname] = vifs[j]
 
         -- OFDMA and MU-MIMO
-        vifs[j].__muofdma_dlenable = mtkwifi.token_get(cfgs.MuOfdmaDlEnable, j, mtkwifi.__split(cfgs.MuOfdmaDlEnable,";")[1])
-        vifs[j].__muofdma_ulenable = mtkwifi.token_get(cfgs.MuOfdmaUlEnable, j, mtkwifi.__split(cfgs.MuOfdmaUlEnable,";")[1])
-        vifs[j].__mumimo_dlenable = mtkwifi.token_get(cfgs.MuMimoDlEnable, j, mtkwifi.__split(cfgs.MuMimoDlEnable,";")[1])
-        vifs[j].__mumimo_ulenable = mtkwifi.token_get(cfgs.MuMimoUlEnable, j, mtkwifi.__split(cfgs.MuMimoUlEnable,";")[1])
+        vifs[j].__muofdma_dlenable = mtkwifi.token_get(cfgs.MuOfdmaDlEnable, j, mtkwifi.__split(cfgs.MuOfdmaDlEnable,";")[1]) 
+        vifs[j].__muofdma_ulenable = mtkwifi.token_get(cfgs.MuOfdmaUlEnable, j, mtkwifi.__split(cfgs.MuOfdmaUlEnable,";")[1]) 
+        vifs[j].__mumimo_dlenable = mtkwifi.token_get(cfgs.MuMimoDlEnable, j, mtkwifi.__split(cfgs.MuMimoDlEnable,";")[1])  
+        vifs[j].__mumimo_ulenable = mtkwifi.token_get(cfgs.MuMimoUlEnable, j, mtkwifi.__split(cfgs.MuMimoUlEnable,";")[1])  
 
     end
 
