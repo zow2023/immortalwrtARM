@@ -262,6 +262,9 @@ msgstr "启用终端直通(DLS)"
 msgid "802.11k RRM"
 msgstr "启用 802.11k"
 
+msgid "802.11r FT"
+msgstr "启用 802.11r"
+
 msgid "APSD Capable"
 msgstr "启用节能模式(APSD)"
 
@@ -332,6 +335,9 @@ msgid "UL MU-MIMO"
 msgstr "上行MU-MIMO"
 
 msgid "SCAN WIRELESS NETWORK"
+msgstr "扫描无线网络"
+
+msgid "Scan Wireless Network"
 msgstr "扫描无线网络"
 
 msgid "ApClient Mode"
