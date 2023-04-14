@@ -135,9 +135,16 @@ local __setup_wan = function(devname)
     local cfgs = mtkwifi.load_profile(profiles[devname])
     local dev = devs and devs[devname]
     local vif = "eth1"
-
+    os.execute("brctl delif br-lan apcli0")
+    os.execute("brctl delif br-lan apclii0")
     if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" and dev.apcli.vifname then
+    if cfgs.ApCliBridge == "0" then
         vif = dev.apcli.vifname
+    end
+    if cfgs.ApCliBridge == "1" then
+    os.execute("brctl addif br-lan apcli0")
+    os.execute("brctl addif br-lan apclii0")
+    end
     end
 
     nixio.syslog("debug", "Set wan/wan6 to "..vif)
@@ -171,6 +178,9 @@ local __mtkwifi_reload = function (devname)
             end
 
             if diff.ApCliEnable then
+                change_wan = true
+            end
+            if diff.ApCliBridge then
                 change_wan = true
             end
         end
@@ -1267,8 +1277,7 @@ function apcli_connect(dev, vif)
     cfgs.ApCliEnable = "1"
     __mtkwifi_save_profile(cfgs, profiles[devname], true)
     os.execute("ifconfig "..vifname.." up")
-    --os.execute("brctl addif br-lan "..vifname)
-    os.execute("iwpriv "..vifname.." set MACRepeaterEn="..cfgs.MACRepeaterEn)
+    os.execute("iwpriv "..vifname.." set MACRepeaterEn=0")
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("iwpriv "..vifname.." set Channel="..cfgs.Channel)
     os.execute("iwpriv "..vifname.." set ApCliAuthMode="..cfgs.ApCliAuthMode)
@@ -1292,7 +1301,6 @@ function apcli_connect(dev, vif)
     os.execute("iwpriv "..vifname.." set ApCliSsid=\""..mtkwifi.__handleSpecialChars(cfgs.ApCliSsid).."\"")
     os.execute("iwpriv "..vifname.." set ApCliEnable=1")
     os.execute("iwpriv "..vifname.." set ApCliAutoConnect=3")
-
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
@@ -1313,7 +1321,6 @@ function apcli_disconnect(dev, vif)
     __mtkwifi_save_profile(cfgs, profiles[devname], true)
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("ifconfig "..vifname.." down")
-    --os.execute("brctl delif br-lan "..vifname)
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 

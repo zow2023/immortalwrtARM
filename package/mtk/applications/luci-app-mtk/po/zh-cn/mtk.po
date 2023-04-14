@@ -343,14 +343,14 @@ msgstr "扫描无线网络"
 msgid "ApClient Mode"
 msgstr "ApClient模式"
 
-msgid "MAC Repeater Mode"
-msgstr "启用MAC Repeater模式"
+msgid "ApCliBridge Mode"
+msgstr "无线AP透明组网(启用前请修改本路由器管理IP为同网段不重复)"
 
 msgid "Root AP SSID"
 msgstr "上级AP SSID"
 
 msgid "Root AP Channel"
-msgstr "上级AP信道"
+msgstr "上级AP信道 填写0则自动搜索"
 
 msgid "Root AP Authentication Mode"
 msgstr "上级AP认证方式"
