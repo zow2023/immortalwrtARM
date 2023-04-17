@@ -51,7 +51,7 @@ define Package/wifi-profile/install
 	$(INSTALL_BIN) ./files/common/wifi_jedi $(1)/sbin/wifi
 	$(INSTALL_BIN) ./files/common/mtwifi.lua $(1)/lib/wifi/
 	$(INSTALL_BIN) ./files/common/quick_setting.lua $(1)/lib/wifi/
-	$(INSTALL_DATA) ./files/mt7981/* $(1)/etc/wireless/mediatek/
+	$(INSTALL_DATA) ./files/mt7986/* $(1)/etc/wireless/mediatek/
 	mv $(1)/etc/wireless/mediatek/l1profile.dat $(1)/etc/wireless/l1profile.dat 
 	
 endef
