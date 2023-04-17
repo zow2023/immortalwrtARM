@@ -288,20 +288,16 @@ define Build/Compile
 endef
 
 define KernelPackage/mt_wifi/install
-	rm -rf $(1)/lib/firmware/; \
-	$(INSTALL_DIR) $(1)/lib/firmware/; \
-		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_TESTMODE.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_TESTMODE_MT7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_testmode.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_testmode_mt7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/WIFI_RAM_CODE_MT7986_MT7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/mt7986_patch_e1_hdr_mt7975.bin \
-		$(PKG_BUILD_DIR)/bin/mt7986/rebb/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
-			$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_iPAiLNA_EEPROM_AX6000.bin $(PKG_BUILD_DIR)/bin/mt7986/rebb/MT7986_ePAeLNA_EEPROM_AX6000.bin \
-			$(1)/lib/firmware/; \
-		
+	rm -rf $(1)/lib/firmware/
+	$(INSTALL_DIR) $(1)/lib/firmware/
+		$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/mt7981/rebb/WIFI_RAM_CODE_MT7981.bin \
+		$(PKG_BUILD_DIR)/bin/mt7981/rebb/7981_WACPU_RAM_CODE_release.bin \
+		$(PKG_BUILD_DIR)/bin/mt7981/rebb/mt7981_patch_e1_hdr.bin \
+		$(PKG_BUILD_DIR)/bin/mt7981/rebb/WIFI_RAM_CODE_MT7981_TESTMODE.bin \
+		$(PKG_BUILD_DIR)/bin/mt7981/rebb/mt7981_patch_e1_hdr_testmode.bin \
+		$(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_iPAiLNA_EEPROM.bin \
+		$(PKG_BUILD_DIR)/bin/mt7981/rebb/MT7981_ePAeLNA_EEPROM.bin \
+		$(1)/lib/firmware
 endef
 
 $(eval $(call KernelPackage,mt_wifi))

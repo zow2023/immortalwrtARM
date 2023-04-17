@@ -138,7 +138,7 @@ local __setup_wan = function(devname)
     os.execute("brctl delif br-lan apcli0")
     os.execute("brctl delif br-lan apclii0")
     if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" and dev.apcli.vifname then
-    if cfgs.ApCliBridge == "0" then
+    if cfgs.ApCliBridge ~= "1" and cfgs.ApCliBridge ~= "" then
         vif = dev.apcli.vifname
     end
     if cfgs.ApCliBridge == "1" then
