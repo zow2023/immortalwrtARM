@@ -41,8 +41,7 @@ define Package/mtkhnat_util/install
 
 	$(INSTALL_BIN) ./files/mtkhnat $(1)/sbin/
 	$(INSTALL_BIN) ./files/mtkhnat.config $(1)/etc/config/mtkhnat
-	$(INSTALL_BIN) ./files/mtkhnat.init $(1)/etc/init.d/mtkhnat
-	$(INSTALL_BIN) ./files/99-firewall $(1)/etc/uci-defaults	
+	$(INSTALL_BIN) ./files/mtkhnat.init $(1)/etc/init.d/mtkhnat	
 endef
 
 $(eval $(call BuildPackage,mtkhnat_util))
