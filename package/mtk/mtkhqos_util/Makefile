@@ -40,7 +40,6 @@ define Package/mtkhqos_util/install
 
 	$(INSTALL_BIN) ./files/mtkhqos $(1)/sbin/
 	$(INSTALL_BIN) ./files/mtkhqos.config $(1)/etc/config/mtkhqos
-	$(INSTALL_BIN) ./files/mtkhqos.init $(1)/etc/init.d/mtkhqos
 endef
 
 $(eval $(call BuildPackage,mtkhqos_util))
