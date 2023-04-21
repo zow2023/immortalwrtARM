@@ -42,12 +42,9 @@ endif
 
 define Package/mtkiappd/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/usr/share/mtkiappd
 
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/mtkiappd $(1)/usr/sbin/
-	$(INSTALL_BIN) ./files/mtkiappd.sh $(1)/etc/init.d/mtkiappd
-	sed -i 's/WIRELESS_IOCTL_PARAM/$(WIRELESS_IOCTL_PARAM)/' $(1)/etc/init.d/mtkiappd
 	$(INSTALL_DATA) ./files/firewall.include $(1)/usr/share/mtkiappd/
 endef
 
