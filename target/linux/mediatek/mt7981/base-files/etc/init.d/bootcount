@@ -5,5 +5,4 @@ START=99
 boot() {
         /sbin/smp.sh
         /etc/init.d/kick.sh start
-        /etc/init.d/mtkiappd start
 }
