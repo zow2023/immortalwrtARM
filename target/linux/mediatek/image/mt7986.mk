@@ -360,7 +360,7 @@ define Device/xiaomi_redmi-router-ax6000-uboot
    DEVICE_MODEL := Redmi Router AX6000 (uboot layout)
    DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000-uboot
    DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util kmod-leds-ws2812b
+   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-leds-ws2812b
    UBINIZE_OPTS := -E 5
    BLOCKSIZE := 128k
    PAGESIZE := 2048
@@ -374,7 +374,7 @@ define Device/xiaomi_redmi-router-ax6000
    DEVICE_MODEL := Redmi Router AX6000
    DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000
    DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
-   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhqos_util kmod-leds-ws2812b
+   DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-leds-ws2812b
    UBINIZE_OPTS := -E 5
    BLOCKSIZE := 128k
    PAGESIZE := 2048
