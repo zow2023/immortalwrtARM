@@ -32,13 +32,13 @@ platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 
 	case "$board" in
-    *wr30u* |\
+        *wr30u* |\
 	*mt3000* |\
 	*x3000* |\
 	*xe3000* |\
 	*mt2500* |\
 	*360,t7* |\
-    *komi,a31* |\
+        *komi,a31* |\
 	*snand* |\
 	*emmc*)
 		# tar magic `ustar`
