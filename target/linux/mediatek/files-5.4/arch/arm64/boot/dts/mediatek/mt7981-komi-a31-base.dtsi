@@ -30,7 +30,7 @@
 
                 led_red {
                         label = "net_red";
-                        gpios = <&pio 23 GPIO_ACTIVE_LOW>;
+                        gpios = <&pio 22 GPIO_ACTIVE_LOW>;
                         default-state = "off";
                 };
         };
