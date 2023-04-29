@@ -4,13 +4,13 @@ platform_do_upgrade() {
 	local board=$(board_name)
 
 	case "$board" in
-    *wr30u* |\
+        *wr30u* |\
 	*mt3000* |\
 	*x3000* |\
 	*xe3000* |\
 	*mt2500* |\
 	*360,t7* |\
-    *komi,a31* |\
+        *komi,a31* |\
 	*snand*)
 		nand_do_upgrade "$1"
 		;;
