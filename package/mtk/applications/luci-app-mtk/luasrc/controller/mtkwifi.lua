@@ -135,9 +135,16 @@ local __setup_wan = function(devname)
     local cfgs = mtkwifi.load_profile(profiles[devname])
     local dev = devs and devs[devname]
     local vif = "eth1"
-
+    os.execute("brctl delif br-lan apcli0")
+    os.execute("brctl delif br-lan apclii0")
     if cfgs.ApCliEnable ~= "0" and cfgs.ApCliEnable ~= "" and dev.apcli.vifname then
+    if cfgs.ApCliBridge ~= "1" and cfgs.ApCliBridge ~= "" then
         vif = dev.apcli.vifname
+    end
+    if cfgs.ApCliBridge == "1" then
+    os.execute("brctl addif br-lan apcli0")
+    os.execute("brctl addif br-lan apclii0")
+    end
     end
 
     nixio.syslog("debug", "Set wan/wan6 to "..vif)
@@ -173,6 +180,9 @@ local __mtkwifi_reload = function (devname)
             if diff.ApCliEnable then
                 change_wan = true
             end
+            if diff.ApCliBridge then
+                change_wan = true
+            end
         end
     end
 
@@ -183,10 +193,12 @@ local __mtkwifi_reload = function (devname)
     if wifi_restart then
         os.execute("wifi restart "..(devname or ""))
         os.execute("/etc/init.d/kick.sh start")
+        os.execute("/etc/init.d/mtkiappd start")
         debug_write("wifi restart "..(devname or ""))
     elseif wifi_reload then
         os.execute("wifi reload "..(devname or ""))
         os.execute("/etc/init.d/kick.sh start")
+        os.execute("/etc/init.d/mtkiappd start")
         debug_write("wifi reload "..(devname or ""))
     end
 
@@ -446,6 +458,7 @@ function __delete_mbss_para(cfgs, vif_idx)
     cfgs["PMKCachePeriod"] = mtkwifi.token_set(cfgs["PMKCachePeriod"],vif_idx,"")
     cfgs["Wapiifname"] = mtkwifi.token_set(cfgs["Wapiifname"],vif_idx,"")
     cfgs["RRMEnable"] = mtkwifi.token_set(cfgs["RRMEnable"],vif_idx,"")
+    cfgs["FtSupport"] = mtkwifi.token_set(cfgs["FtSupport"],vif_idx,"")
     cfgs["DLSCapable"] = mtkwifi.token_set(cfgs["DLSCapable"],vif_idx,"")
     cfgs["APSDCapable"] = mtkwifi.token_set(cfgs["APSDCapable"],vif_idx,"")
     cfgs["FragThreshold"] = mtkwifi.token_set(cfgs["FragThreshold"],vif_idx,"")
@@ -770,6 +783,7 @@ function __update_mbss_para(cfgs, vif_idx)
     cfgs.VHT_LDPC = mtkwifi.token_set(cfgs.VHT_LDPC, vif_idx, http.formvalue("__vht_ldpc") or "0")
     cfgs.DLSCapable = mtkwifi.token_set(cfgs.DLSCapable, vif_idx, http.formvalue("__dls_capable") or "0")
     cfgs.RRMEnable = mtkwifi.token_set(cfgs.RRMEnable, vif_idx, http.formvalue("__rrmenable") or "0")
+    cfgs.FtSupport = mtkwifi.token_set(cfgs.FtSupport, vif_idx, http.formvalue("__ftsupport") or "0")
     cfgs.APSDCapable = mtkwifi.token_set(cfgs.APSDCapable, vif_idx, http.formvalue("__apsd_capable") or "0")
     cfgs.FragThreshold = mtkwifi.token_set(cfgs.FragThreshold, vif_idx, http.formvalue("__frag_threshold") or "0")
     cfgs.RTSThreshold = mtkwifi.token_set(cfgs.RTSThreshold, vif_idx, http.formvalue("__rts_threshold") or "0")
@@ -1263,8 +1277,7 @@ function apcli_connect(dev, vif)
     cfgs.ApCliEnable = "1"
     __mtkwifi_save_profile(cfgs, profiles[devname], true)
     os.execute("ifconfig "..vifname.." up")
-    --os.execute("brctl addif br-lan "..vifname)
-    os.execute("iwpriv "..vifname.." set MACRepeaterEn="..cfgs.MACRepeaterEn)
+    os.execute("iwpriv "..vifname.." set MACRepeaterEn=0")
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("iwpriv "..vifname.." set Channel="..cfgs.Channel)
     os.execute("iwpriv "..vifname.." set ApCliAuthMode="..cfgs.ApCliAuthMode)
@@ -1288,7 +1301,6 @@ function apcli_connect(dev, vif)
     os.execute("iwpriv "..vifname.." set ApCliSsid=\""..mtkwifi.__handleSpecialChars(cfgs.ApCliSsid).."\"")
     os.execute("iwpriv "..vifname.." set ApCliEnable=1")
     os.execute("iwpriv "..vifname.." set ApCliAutoConnect=3")
-
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
@@ -1309,7 +1321,6 @@ function apcli_disconnect(dev, vif)
     __mtkwifi_save_profile(cfgs, profiles[devname], true)
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
     os.execute("ifconfig "..vifname.." down")
-    --os.execute("brctl delif br-lan "..vifname)
     luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 

@@ -37,6 +37,7 @@ APACM=0;0;0;0
 APAifsn=3;7;1;1
 ApCliAuthMode=
 ApCliBssid=
+ApCliBridge=0
 ApCliDefaultKeyID=
 ApCliEnable=0
 ApCliEncrypType=

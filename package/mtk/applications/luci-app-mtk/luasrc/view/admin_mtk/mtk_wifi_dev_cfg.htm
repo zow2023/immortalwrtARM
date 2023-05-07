@@ -163,6 +163,13 @@ local bands = mtkwifi.detect_triband()
                     <input name="KickStaRssiLow" value="<%=cfgs.KickStaRssiLow%>" />dbm(范围0到-100，-100最不容易剔除)
                 </td>
             </tr>
+            
+            <tr>
+                <td>2.4G强信号剔除</td>
+                <td>
+                    <input name="KickStaRssiHigh" value="<%=cfgs.KickStaRssiHigh%>" />dbm(范围0到-100，双频合一时可设置-50将强信号终端引导至5G.仅对ra1接口生效)
+                </td>
+            </tr>
             <% if mtkwifi.band(string.split(cfgs.WirelessMode,";")[1]) == "5G" then %>
                 <tr>
                     <td>802.11H</td>
