@@ -1,3 +1,4 @@
+/*小鸡过河绕道*/
 /dts-v1/;
 #include "mt7981-h3c-nx30pro-base.dtsi"
 
