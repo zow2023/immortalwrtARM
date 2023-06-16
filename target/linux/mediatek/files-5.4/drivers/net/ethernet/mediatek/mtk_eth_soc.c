@@ -411,6 +411,7 @@ static int extphy_init(struct mtk_eth *eth, int addr)
 			
 		}
 
+		printk("8221 phy id is %u",phy_id);
 		if (phy_id_is_match(phy_id, extphy))
 			{extphy->init(eth, addr);}
 		
@@ -3977,6 +3978,7 @@ static int mtk_probe(struct platform_device *pdev)
 		// For TP-Link XDR6086 and XDR6088, we have two RTL822X at reg 5 and reg 7 respectively.
         extphy_init(eth, 5);
 	extphy_init(eth, 7);
+	extphy_init(eth, 6);
         ext_init = 1;
     }
 #endif

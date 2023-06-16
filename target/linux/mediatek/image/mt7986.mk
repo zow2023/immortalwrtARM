@@ -68,7 +68,7 @@ define Device/mt7986a-ax6000-emmc-rfb
   SUPPORTED_DEVICES := mediatek,mt7986a-emmc-rfb
   DEVICE_PACKAGES := mkf2fs e2fsprogs blkid blockdev losetup kmod-fs-ext4 \
 		     kmod-mmc kmod-fs-f2fs kmod-fs-vfat kmod-nls-cp437 \
-		     kmod-nls-iso8859-1
+		     kmod-nls-iso8859-1 fdisk e2fsprogs
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += mt7986a-ax6000-emmc-rfb

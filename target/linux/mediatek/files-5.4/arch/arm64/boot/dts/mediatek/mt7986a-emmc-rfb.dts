@@ -1,9 +1,12 @@
 /dts-v1/;
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
 #include "mt7986a.dtsi"
 #include "mt7986a-pinctrl.dtsi"
 / {
 	model = "MediaTek MT7986a RFB";
-	compatible = "mediatek,mt7986a-emmc-rfb";
+	compatible = "mt7986a-ax6000-emmc-re-cp-03";
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8  \
 				earlycon=uart8250,mmio32,0x11002000 \
@@ -48,6 +51,49 @@
 		mediatek,platform = <&afe>;
 		mediatek,ext-codec = <&proslic_spi>;
 		status = "okay";
+	};
+	
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		reset {
+ 			label = "reset";
+ 			linux,code = <KEY_RESTART>;
+ 			gpios = <&pio 9 GPIO_ACTIVE_LOW>;
+ 		};
+
+ 		joylink {
+ 			label = "joylink";
+ 			linux,code = <KEY_WPS_BUTTON>;
+ 			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
+ 		};
+
+	};
+	
+	leds {
+		compatible = "gpio-leds";
+
+		led_status_blue: status_blue {
+ 			label = "blue:status";
+ 			gpios = <&pio 7 GPIO_ACTIVE_HIGH>;
+ 		};
+
+ 		led_status_red: status_red {
+ 			label = "red:status";
+ 			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
+ 		};
+
+ 		led_status_green: status_green{
+ 			label = "green:green";
+ 			gpios = <&pio 12 GPIO_ACTIVE_HIGH>;
+ 		};
+	};
+	
+	gsw: gsw@0 {
+		compatible = "mediatek,mt753x";
+		mediatek,ethsys = <&ethsys>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 	};
 };
 
@@ -104,7 +150,6 @@
 		compatible = "mediatek,eth-mac";
 		reg = <0>;
 		phy-mode = "2500base-x";
-
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
@@ -116,7 +161,7 @@
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "2500base-x";
-
+		ext-phy-reset-gpios = <&pio 6 0>;
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
@@ -127,72 +172,56 @@
 	mdio: mdio-bus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		phy5: phy@5 {
 			compatible = "ethernet-phy-id67c9.de0a";
 			reg = <5>;
-			reset-gpios = <&pio 6 1>;
-			reset-assert-us = <600>;
-			reset-deassert-us = <20000>;
-			phy-mode = "2500base-x";
 		};
 
 		phy6: phy@6 {
-			compatible = "ethernet-phy-id67c9.de0a";
+			compatible = "ethernet-phy-ieee802.3-c45";
 			reg = <6>;
-			phy-mode = "2500base-x";
-		};
-
-		switch@0 {
-			compatible = "mediatek,mt7531";
-			reg = <31>;
-			reset-gpios = <&pio 5 0>;
-
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				port@0 {
-					reg = <0>;
-					label = "lan0";
-				};
-
-				port@1 {
-					reg = <1>;
-					label = "lan1";
-				};
-
-				port@2 {
-					reg = <2>;
-					label = "lan2";
-				};
-
-				port@3 {
-					reg = <3>;
-					label = "lan3";
-				};
-
-				port@6 {
-					reg = <6>;
-					label = "cpu";
-					ethernet = <&gmac0>;
-					phy-mode = "2500base-x";
-
-					fixed-link {
-						speed = <2500>;
-						full-duplex;
-						pause;
-					};
-				};
-			};
 		};
 	};
 };
 
+&gsw {
+	mediatek,mdio = <&mdio>;
+	mediatek,portmap = "lllll";
+	mediatek,mdio_master_pinmux = <0>;
+	reset-gpios = <&pio 5 0>;
+	interrupt-parent = <&pio>;
+	interrupts = <66 IRQ_TYPE_LEVEL_HIGH>;
+	status = "okay";
+
+	port5: port@5 {
+		compatible = "mediatek,mt753x-port";
+		reg = <5>;
+		phy-mode = "sgmii";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+		};
+	};
+
+	port6: port@6 {
+		compatible = "mediatek,mt753x-port";
+		mediatek,ssc-on;
+		reg = <6>;
+		phy-mode = "sgmii";
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+		};
+	};
+};
+
+
 &hnat {
 	mtketh-wan = "eth1";
-	mtketh-lan = "lan";
+	mtketh-lan = "eth0";
 	mtketh-max-gmac = <2>;
+	mtketh-ppe-num = <2>;
 	status = "okay";
 };
 
@@ -298,6 +327,40 @@
 			pins = "EMMC_RSTB";
 			drive-strength = <MTK_DRIVE_4mA>;
 			mediatek,pull-up-adv = <1>;	/* pull-up 10K */
+		};
+	};
+	
+	wf_2g_5g_pins: wf_2g_5g-pins {
+		mux {
+			function = "wifi";
+			groups = "wf_2g", "wf_5g";
+		};
+		conf {
+			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3", "WF0_HB4",
+			       "WF0_HB0", "WF0_HB0_B", "WF0_HB5", "WF0_HB6",
+			       "WF0_HB7", "WF0_HB8", "WF0_HB9", "WF0_HB10",
+			       "WF0_TOP_CLK", "WF0_TOP_DATA", "WF1_HB1",
+			       "WF1_HB2", "WF1_HB3", "WF1_HB4", "WF1_HB0",
+			       "WF1_HB5", "WF1_HB6", "WF1_HB7", "WF1_HB8",
+			       "WF1_TOP_CLK", "WF1_TOP_DATA";
+			drive-strength = <MTK_DRIVE_4mA>;
+		};
+	};
+
+	wf_dbdc_pins: wf_dbdc-pins {
+		mux {
+			function = "wifi";
+			groups = "wf_dbdc";
+		};
+		conf {
+			pins = "WF0_HB1", "WF0_HB2", "WF0_HB3", "WF0_HB4",
+			       "WF0_HB0", "WF0_HB0_B", "WF0_HB5", "WF0_HB6",
+			       "WF0_HB7", "WF0_HB8", "WF0_HB9", "WF0_HB10",
+			       "WF0_TOP_CLK", "WF0_TOP_DATA", "WF1_HB1",
+			       "WF1_HB2", "WF1_HB3", "WF1_HB4", "WF1_HB0",
+			       "WF1_HB5", "WF1_HB6", "WF1_HB7", "WF1_HB8",
+			       "WF1_TOP_CLK", "WF1_TOP_DATA";
+			drive-strength = <MTK_DRIVE_4mA>;
 		};
 	};
 };

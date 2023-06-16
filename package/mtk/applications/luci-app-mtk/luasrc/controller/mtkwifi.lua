@@ -149,9 +149,10 @@ local __setup_wan = function(devname)
 
     nixio.syslog("debug", "Set wan/wan6 to "..vif)
 
-    os.execute("uci set network.wan.device="..vif)
-    os.execute("uci set network.wan6.device="..vif)
+    os.execute("uci set network.wan.ifname="..vif)
+    os.execute("uci set network.wan6.ifname="..vif)
     os.execute("uci commit")
+    os.execute("ifdown wan")
     os.execute("ifup wan")
     os.execute("ifup wan6")
 
