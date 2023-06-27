@@ -744,7 +744,9 @@ mtk_hnat_ipv6_nf_pre_routing(void *priv, struct sk_buff *skb,
 {
 	if (!skb)
 		goto drop;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
+	
 	if (!is_ppe_support_type(skb)) {
 		hnat_set_head_frags(state, skb, 1, hnat_set_alg);
 		return NF_ACCEPT;
@@ -803,7 +805,8 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 {
 	if (!skb)
 		goto drop;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
 	if (!is_ppe_support_type(skb)) {
 		hnat_set_head_frags(state, skb, 1, hnat_set_alg);
 		return NF_ACCEPT;
@@ -848,10 +851,11 @@ mtk_hnat_br_nf_local_in(void *priv, struct sk_buff *skb,
 			const struct nf_hook_state *state)
 {
 	struct vlan_ethhdr *veth;
-
+	
 	if (!skb)
 		goto drop;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
 	if (IS_HQOS_MODE && hnat_priv->data->whnat) {
 		veth = (struct vlan_ethhdr *)skb_mac_header(skb);
 
@@ -2215,7 +2219,9 @@ mtk_hnat_ipv6_nf_local_out(void *priv, struct sk_buff *skb,
 	struct tcpudphdr _ports;
 	const struct tcpudphdr *pptr;
 	int udp = 0;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
+	
 	if (unlikely(!skb_hnat_is_hashed(skb)))
 		return NF_ACCEPT;
 
@@ -2334,7 +2340,8 @@ mtk_pong_hqos_handler(void *priv, struct sk_buff *skb,
 
 	if (!skb)
 		goto drop;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
 	veth = (struct vlan_ethhdr *)skb_mac_header(skb);
 
 	if (IS_HQOS_MODE && eth_hdr(skb)->h_proto == HQOS_MAGIC_TAG) {
@@ -2381,7 +2388,8 @@ mtk_hnat_br_nf_local_out(void *priv, struct sk_buff *skb,
 {
 	if (!skb)
 		goto drop;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
 	post_routing_print(skb, state->in, state->out, __func__);
 
 	if (!mtk_hnat_nf_post_routing(skb, state->out, 0, __func__))
@@ -2407,7 +2415,8 @@ mtk_hnat_ipv4_nf_local_out(void *priv, struct sk_buff *skb,
 	struct sk_buff *new_skb;
 	struct foe_entry *entry;
 	struct iphdr *iph;
-
+	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
 	if (!skb_hnat_is_hashed(skb))
 		return NF_ACCEPT;
 
