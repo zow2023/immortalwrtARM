@@ -115,6 +115,9 @@ setup_queue() {
 	[ "${queue_id}" -gt $(((txq_num / 2) - 1)) ] && \
 	echo 1 ${queue_minebl} ${minrate} ${queue_maxebl} ${maxrate} ${queue_weight} \
 		${queue_resv} > /sys/kernel/debug/${module}/qdma_txq${queue_id}
+		
+	echo 2 0 0 0 0 0 4 > /sys/kernel/debug/hnat/qdma_txq0
+ 	echo 2 0 0 0 0 0 4 > /sys/kernel/debug/hnat/qdma_txq8
 }
 
 config_foreach setup_queue queue

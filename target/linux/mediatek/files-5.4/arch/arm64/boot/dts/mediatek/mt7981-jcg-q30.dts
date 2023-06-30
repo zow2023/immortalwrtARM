@@ -1,31 +1,44 @@
 /dts-v1/;
 #include "mt7981.dtsi"
 / {
-	model = "MediaTek MT7981 RFB";
-	compatible = "mediatek,mt7981-spim-snand-rfb";
+	model = "JCG Q30";
+	compatible = "jcg,q30", "mediatek,mt7981";
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8  \
 				earlycon=uart8250,mmio32,0x11002000";
 	};
 
 	memory {
-		// fpga ddr2: 128MB*2
 		reg = <0 0x40000000 0 0x10000000>;
 	};
 
-	gpio-keys {
-			compatible = "gpio-keys";
-				reset {
-					label = "reset";
-					linux,code = <KEY_RESTART>;
-					gpios = <&pio 1 GPIO_ACTIVE_LOW>;
-				};
+	leds {
+		compatible = "gpio-leds";
 
-				wps {
-					label = "wps";
-					linux,code = <KEY_WPS_BUTTON>;
-					gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
-				};
+		blue {
+			label = "q30:blue";
+			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
+		};
+
+		red {
+			label = "q30:red";
+			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+			reset {
+				label = "reset";
+				linux,code = <KEY_RESTART>;
+				gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+			};
+
+			wps {
+				label = "wps";
+				linux,code = <KEY_WPS_BUTTON>;
+				gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
+			};
 	};
 
 	gsw: gsw@0 {
@@ -34,6 +47,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
+	
 	nmbm_spim_nand {
 		compatible = "generic,nmbm";
 
@@ -71,44 +85,9 @@
 
 			partition@580000 {
 				label = "ubi";
-				reg = <0x580000 0x4000000>;
+				reg = <0x580000 0x6e80000>;
 			};
 		};
-	};
-
-	sound_wm8960 {
-		compatible = "mediatek,mt79xx-wm8960-machine";
-		mediatek,platform = <&afe>;
-		audio-routing = "Headphone", "HP_L",
-				"Headphone", "HP_R",
-				"LINPUT1", "AMIC",
-				"RINPUT1", "AMIC";
-		mediatek,audio-codec = <&wm8960>;
-		status = "disabled";
-	};
-
-	sound_si3218x {
-		compatible = "mediatek,mt79xx-si3218x-machine";
-		mediatek,platform = <&afe>;
-		mediatek,ext-codec = <&proslic_spi>;
-		status = "disabled";
-	};
-};
-
-&afe {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pcm_pins>;
-	status = "okay";
-};
-
-&i2c0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&i2c_pins>;
-	status = "disabled";
-
-	wm8960: wm8960@1a {
-		compatible = "wlf,wm8960";
-		reg = <0x1a>;
 	};
 };
 
@@ -192,10 +171,15 @@
 	status = "okay";
 };
 
+&xhci {
+        status = "okay";
+};
+
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_flash_pins>;
 	status = "okay";
+
 	spi_nand: spi_nand@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -204,63 +188,36 @@
 		spi-max-frequency = <52000000>;
 		spi-tx-buswidth = <4>;
 		spi-rx-buswidth = <4>;
-	};
-};
-
-&spi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&spic_pins>;
-	status = "okay";
-
-	proslic_spi: proslic_spi@0 {
-		compatible = "silabs,proslic_spi";
-		reg = <0>;
-		spi-max-frequency = <10000000>;
-		spi-cpha = <1>;
-		spi-cpol = <1>;
-		channel_count = <1>;
-		debug_level = <4>;       /* 1 = TRC, 2 = DBG, 4 = ERR */
-		reset_gpio = <&pio 15 0>;
-		ig,enable-spi = <1>;     /* 1: Enable, 0: Disable */
+		spi-cal-enable;
+		spi-cal-mode = "read-data";
+		spi-cal-datalen = <7>;
+		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>; /* 'SPINAND' */
+		spi-cal-addrlen = <5>;
+		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
 	};
 };
 
 &pio {
+	pwm0_pin: pwm0-pin-g0 {
+		mux {
+			function = "pwm";
+			groups = "pwm0_0";
+		};
+	};
 
-	i2c_pins: i2c-pins-g0 {
-                mux {
-                        function = "i2c";
-                        groups = "i2c0_0";
-                };
-        };
+	pwm1_pin: pwm1-pin-g0 {
+		mux {
+			function = "pwm";
+			groups = "pwm1_0";
+		};
+	};
 
-        pcm_pins: pcm-pins-g0 {
-                mux {
-                        function = "pcm";
-                        groups = "pcm";
-                };
-        };
-
-        pwm0_pin: pwm0-pin-g0 {
-                mux {
-                        function = "pwm";
-                        groups = "pwm0_0";
-                };
-        };
-
-        pwm1_pin: pwm1-pin-g0 {
-                mux {
-                        function = "pwm";
-                        groups = "pwm1_0";
-                };
-        };
-
-        pwm2_pin: pwm2-pin {
-                mux {
-                        function = "pwm";
-                        groups = "pwm2";
-                };
-        };
+	pwm2_pin: pwm2-pin {
+		mux {
+			function = "pwm";
+			groups = "pwm2";
+		};
+	};
 
 	spi0_flash_pins: spi0-pins {
 		mux {
@@ -281,31 +238,17 @@
 		};
 	};
 
-	spic_pins: spi1-pins {
+	uart1_pins: uart1-pins-g1 {
 		mux {
-			function = "spi";
-			groups = "spi1_1";
+			function = "uart";
+			groups = "uart1_1";
 		};
 	};
 
-	uart1_pins: uart1-pins-g1 {
-                mux {
-                        function = "uart";
-                        groups = "uart1_1";
-                };
-        };
-
 	uart2_pins: uart2-pins-g1 {
 		mux {
-                        function = "uart";
-                        groups = "uart2_1";
-                };
-        };
-};
-
-&xhci {
-	mediatek,u3p-dis-msk = <0x0>;
-	phys = <&u2port0 PHY_TYPE_USB2>,
-	       <&u3port0 PHY_TYPE_USB3>;
-	status = "okay";
+			function = "uart";
+			groups = "uart2_1";
+		};
+	};
 };

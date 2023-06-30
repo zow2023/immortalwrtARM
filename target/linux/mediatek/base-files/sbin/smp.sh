@@ -714,6 +714,7 @@ setup_model()
 		MT7986_whnat $num_of_wifi
 		;;
 	*nx30pro* |\
+	*q30* |\
         *wr30u* |\
 	*mt3000* |\
 	*x3000* |\

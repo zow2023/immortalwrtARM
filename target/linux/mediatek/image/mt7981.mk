@@ -273,6 +273,23 @@ define Device/h3c_nx30pro
 endef
 TARGET_DEVICES += h3c_nx30pro
 
+define Device/jcg_q30
+  DEVICE_VENDOR := JCG
+  DEVICE_MODEL := Q30
+  DEVICE_DTS := mt7981-jcg-q30
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := jcg,q30
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 114816k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += jcg_q30
+
 define Device/h3c_nx30pro-112M
   DEVICE_VENDOR := H3C
   DEVICE_MODEL := NX30PRO(with 112M ubi)

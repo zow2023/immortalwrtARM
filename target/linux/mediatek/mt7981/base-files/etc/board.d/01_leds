@@ -16,6 +16,10 @@ case "$(board_name)" in
 	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
 	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
 ;;
+*jcg,q30*)
+	ucidef_set_led_default "red" "RED" "q30:red" "0"
+	ucidef_set_led_default "blue" "BLUE" "q30:blue" "1"
+;;
 *wr30u*)
         ucidef_set_led_default "sys_blue" "BLUE" "led_blue" "1"
         ucidef_set_led_default "sys_yellow" "YELLOW" "led_yellow" "0"
