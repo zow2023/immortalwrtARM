@@ -7,8 +7,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=warp
-P4REV:=
-PKG_VERSION:=
+PKG_VERSION:=20220907-791160
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 PKG_KCONFIG:= \
 	WARP_VERSION \
@@ -64,9 +63,11 @@ MAKE_FLAGS += CONFIG_SUPPORT_OPENWRT=y
 
 define KernelPackage/warp/install
 	$(INSTALL_DIR) $(1)/lib/firmware
-	cp $(PKG_BUILD_DIR)/bin/*WOCPU*_RAM_CODE_release.bin $(1)/lib/firmware/;
+	if [ "$$(CONFIG_WARP_CHIPSET)" = "mt7981" ]; then \
+		cp $(PKG_BUILD_DIR)/bin/7981*WOCPU*_RAM_CODE_release.bin $(1)/lib/firmware/; \
+	elif [ "$$(CONFIG_WARP_CHIPSET)" = "mt7986" ]; then \
+		cp $(PKG_BUILD_DIR)/bin/7986*WOCPU*_RAM_CODE_release.bin $(1)/lib/firmware/; \
+	fi
 endef
 
 $(eval $(call KernelPackage,warp))
-
-

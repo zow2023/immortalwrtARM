@@ -801,9 +801,9 @@ struct foe_entry {
 /* If user wants to change default FOE entry number, both DEF_ETRY_NUM and
  * DEF_ETRY_NUM_CFG need to be modified.
  */
-#define DEF_ETRY_NUM		32768
+#define DEF_ETRY_NUM		16384
 /* feasible values : 32768, 16384, 8192, 4096, 2048, 1024 */
-#define DEF_ETRY_NUM_CFG	TABLE_32K
+#define DEF_ETRY_NUM_CFG	TABLE_16K
 /* corresponding values : TABLE_32K, TABLE_16K, TABLE_8K, TABLE_4K, TABLE_2K,
  * TABLE_1K
  */
@@ -1152,9 +1152,22 @@ enum FoeIpAct {
 #define NEXTHDR_IPIP 4
 #endif
 
+#define UDF_PINGPONG_IFIDX GENMASK(3, 0)
+#define UDF_HNAT_PRE_FILLED BIT(4)
 extern const struct of_device_id of_hnat_match[];
 extern struct mtk_hnat *hnat_priv;
 
+static inline int is_hnat_pre_filled(struct foe_entry *entry)
+{
+	u32 udf = 0;
+
+	if (IS_IPV4_GRP(entry))
+		udf = entry->ipv4_hnapt.act_dp;
+	else
+		udf = entry->ipv6_5t_route.act_dp;
+
+	return !!(udf & UDF_HNAT_PRE_FILLED);
+}
 #if defined(CONFIG_NET_DSA_MT7530)
 u32 hnat_dsa_fill_stag(const struct net_device *netdev,
 		       struct foe_entry *entry,
