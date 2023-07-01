@@ -2971,7 +2971,6 @@ typedef struct _BSS_STRUCT {
 	/* YF@20120417: Avoid connecting to AP in Poor Env, value 0 fOr disable. */
 	CHAR AssocReqRssiThreshold;
 	CHAR RssiLowForStaKickOut;
-	CHAR RssiHighForStaKickOut;
 
 #ifdef CUSTOMER_VENDOR_IE_SUPPORT
 	/*For AP vendor ie*/

@@ -2326,6 +2326,8 @@ VOID he_mode_adjust(struct wifi_dev *wdev, struct _MAC_TABLE_ENTRY *peer, UCHAR 
 				PeerMaxBw = BW_160;
 			if (peer->cap.ch_bw.he_ch_width & SUPP_160M_8080M_CW_IN_5G_BAND)
 				PeerMaxBw = BW_160;
+			if ((PeerMaxBw == BW_80) && (bw_from_opclass != NULL) && ((*bw_from_opclass) < BW_80))
+				PeerMaxBw = BW_40;
 		}
 	}
 

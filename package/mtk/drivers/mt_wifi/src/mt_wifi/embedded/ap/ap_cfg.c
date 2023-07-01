@@ -420,8 +420,6 @@ INT Set_AP_ASSOC_REQ_RSSI_THRESHOLD(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
 INT	Set_AP_KickStaRssiLow_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
-INT	Set_AP_KickStaRssiHigh_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
-
 INT Set_BasicRate_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
 
 #ifdef REDUCE_TCP_ACK_SUPPORT
@@ -1253,7 +1251,6 @@ static struct {
 #endif /* SPECIFIC_TX_POWER_SUPPORT */
 	{"AssocReqRssiThres",           Set_AP_ASSOC_REQ_RSSI_THRESHOLD},
 	{"KickStaRssiLow",				Set_AP_KickStaRssiLow_Proc},
-	{"KickStaRssiHigh",				Set_AP_KickStaRssiHigh_Proc},
 	{"PtkRekey",					Set_PtkRekey_Proc},
 #ifdef OCE_SUPPORT
 	{"OceRssiThreshold",			Set_OceRssiThreshold_Proc},
@@ -14555,34 +14552,6 @@ INT Set_AP_KickStaRssiLow_Proc(
 
 	for (j = BSS0; j < pAd->ApCfg.BssidNum; j++)
 		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "%d. ==> %d\n", j, pAd->ApCfg.MBSSID[j].RssiLowForStaKickOut);
-
-	return TRUE;
-}
-
-INT Set_AP_KickStaRssiHigh_Proc(
-	IN  PRTMP_ADAPTER    pAd,
-	IN  RTMP_STRING *arg)
-{
-	POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie;
-	UCHAR           apidx = pObj->ioctl_if;
-	UINT j;
-	CHAR rssi;
-
-	rssi = os_str_tol(arg, 0, 10);
-
-	if (rssi == 0)
-		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "Disable RssiHighForStaKickOut Function\n");
-	else if (rssi > 0 || rssi < -100) {
-		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "RssihighForStaKickOut Value Error.\n");
-		return FALSE;
-	}
-
-	pAd->ApCfg.MBSSID[apidx].RssiHighForStaKickOut = rssi;
-	MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "I/F(ra%d) RssiHighForStaKickOut=%d\n", apidx,
-			 pAd->ApCfg.MBSSID[apidx].RssiHighForStaKickOut);
-
-	for (j = BSS0; j < pAd->ApCfg.BssidNum; j++)
-		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "%d. ==> %d\n", j, pAd->ApCfg.MBSSID[j].RssiHighForStaKickOut);
 
 	return TRUE;
 }

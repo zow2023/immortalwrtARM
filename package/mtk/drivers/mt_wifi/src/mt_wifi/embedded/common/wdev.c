@@ -998,7 +998,8 @@ void wdev_sync_prim_ch(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev)
 			tdev->channel = wdev->channel;
 		else if ((wdev->wdev_type == WDEV_TYPE_AP) &&
 				(tdev != NULL) &&
-				(band_idx == HcGetBandByWdev(tdev)))
+				(band_idx == HcGetBandByWdev(tdev)) &&
+				(tdev->PhyMode == wdev->PhyMode))
 			tdev->channel = wdev->channel;
 
 		/* Fix for Apcli linkdown issue when AP interface brinup happens after linkup */
@@ -1006,7 +1007,7 @@ void wdev_sync_prim_ch(struct _RTMP_ADAPTER *ad, struct wifi_dev *wdev)
 				(tdev != NULL) &&
 				(tdev->wdev_type == WDEV_TYPE_AP) &&
 				(tdev->if_up_down_state == 0) &&
-				(band_idx == HcGetBandByWdev(tdev)))
+				(tdev->PhyMode == wdev->PhyMode))
 			tdev->channel = wdev->channel;
 		if (tdev && ((tdev->wdev_type == WDEV_TYPE_AP) || (tdev->wdev_type == WDEV_TYPE_STA))
 			&& ((wdev->wdev_type == WDEV_TYPE_AP) || (wdev->wdev_type == WDEV_TYPE_STA))) {

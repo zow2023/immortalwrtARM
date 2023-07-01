@@ -3962,21 +3962,14 @@ VOID MacTableMaintenance(RTMP_ADAPTER *pAd)
 			}
 		}
 
-		avgRssi = RTMPAvgRssi(pAd, &pEntry->RssiSample)+10;
-		
+		avgRssi = RTMPAvgRssi(pAd, &pEntry->RssiSample);
 
-		if ( (pEntry->RssiSample.Rssi_Updated && pMbss->RssiLowForStaKickOut &&
-			(avgRssi < pMbss->RssiLowForStaKickOut)) || (pEntry->RssiSample.Rssi_Updated && pMbss->RssiHighForStaKickOut &&
-			(avgRssi > pMbss->RssiHighForStaKickOut)) ) {
+		if ( pEntry->RssiSample.Rssi_Updated && pMbss->RssiLowForStaKickOut &&
+			(avgRssi < pMbss->RssiLowForStaKickOut)) {
 			bDisconnectSta = TRUE;
-			if(!pMbss->RssiHighForStaKickOut)
 			MTWF_DBG(pAd, DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_NOTICE,
 					 "Disassoc STA "MACSTR", RSSI Kickout Thres[%d]-[%d]\n",
 					  MAC2STR(pEntry->Addr), pMbss->RssiLowForStaKickOut,	avgRssi);
-			else
-			MTWF_DBG(pAd, DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_NOTICE,
-					 "Disassoc STA "MACSTR", RSSI Kickout Thres[%d]-[%d]\n",
-					  MAC2STR(pEntry->Addr), pMbss->RssiHighForStaKickOut,	avgRssi);
 #ifdef WIFI_DIAG
 			if (pEntry && IS_ENTRY_CLIENT(pEntry))
 				diag_conn_error(pAd, pEntry->func_tb_idx, pEntry->Addr,
