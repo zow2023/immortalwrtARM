@@ -126,20 +126,16 @@ mediatek_setup_macs()
 		mtk_facrory_write_mac "Factory" 4 $wifi_mac
 		else
 		local wifi_mac=$(mtd_get_mac_binary $part_name 4)
-		lan_mac="$(macaddr_add $wifi_mac -1)"
-		wan_mac="$(macaddr_add $wifi_mac -2)"
+		lan_mac="$(macaddr_add $wifi_mac 1)"
+		wan_mac="$(macaddr_add $wifi_mac 2)"
 		fi
         	;;
         *cetron,ct3003*)
-        	if [ "$(mtk_factory_get_byte "Factory" 4 2)" = "00-0c" ]; then
-        	wan_mac=$(mtd_get_mac_binary ART 0x7b)
+		wan_mac=$(mtd_get_mac_binary ART 0x7b)
         	lan_mac=$(macaddr_add "$wan_mac" 1)
+        	if [ "$(mtk_factory_get_byte "Factory" 4 2)" = "00-0c" ]; then
 		local wifi_mac="$(macaddr_add $wan_mac 0x2)"
 		mtk_facrory_write_mac "Factory" 4 $wifi_mac
-		else
-		local wifi_mac=$(mtd_get_mac_binary $part_name 4)
-		lan_mac="$(macaddr_add $wifi_mac -1)"
-		wan_mac="$(macaddr_add $wifi_mac -2)"
 		fi
         	;;
 	*mt3000*)
