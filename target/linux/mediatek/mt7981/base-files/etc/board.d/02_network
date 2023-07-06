@@ -133,10 +133,8 @@ mediatek_setup_macs()
         *cetron,ct3003*)
 		lan_mac=$(mtd_get_mac_ascii ART MAC_ADDRESS)
         	wan_mac=$(macaddr_add "$lan_mac" 0x3)
-        	if [ "$(mtk_factory_get_byte "Factory" 4 2)" = "00-0c" ]; then
 		local wifi_mac="$(macaddr_add $lan_mac 0x1)"
 		mtk_facrory_write_mac "Factory" 4 $wifi_mac
-		fi
         	;;
 	*mt3000*)
 		wan_mac=$(mtd_get_mac_binary $part_name 0x0a)
