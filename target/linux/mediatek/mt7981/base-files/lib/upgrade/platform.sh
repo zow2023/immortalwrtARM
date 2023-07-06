@@ -11,6 +11,7 @@ platform_do_upgrade() {
 	*mt2500* |\
 	*360,t7* |\
 	*nx30pro* |\
+ 	*ct3003* |\
 	*q30* |\
         *komi,a31* |\
 	*snand*)
@@ -41,6 +42,7 @@ platform_check_image() {
 	*mt2500* |\
 	*360,t7* |\
 	*nx30pro* |\
+ 	*ct3003* |\
 	*q30* |\
         *komi,a31* |\
 	*snand* |\
