@@ -1355,8 +1355,9 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 					foe->ipv6_5t_route.dport;
 			}
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+
 			if (ct && (ct->status & IPS_SRC_NAT)) {
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
 				entry.bfib1.pkt_type = IPV6_HNAPT;
 
 				if (IS_WAN(dev) || IS_DSA_WAN(dev)) {
@@ -1391,8 +1392,11 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 				entry.ipv6_hnapt.new_sport = ntohs(pptr->src);
 				entry.ipv6_hnapt.new_dport = ntohs(pptr->dst);
-			}
+#else
+				return -1;
 #endif
+			}
+
 
 			entry.ipv6_5t_route.iblk2.dscp =
 				(ip6h->priority << 4 |
@@ -2153,9 +2157,8 @@ static unsigned int mtk_hnat_nf_post_routing(
 						.virt_dev = (struct net_device*)out };
 	const struct net_device *arp_dev = out;
 	
-	if (skb->protocol == htons(ETH_P_IPV6) && !hnat_priv->ipv6_en) {
- 		return 0;
- 	}
+	if (skb->mark == 12345) return 0; 
+	
 
 	if (skb_hnat_alg(skb) || unlikely(!is_magic_tag_valid(skb) ||
 					  !IS_SPACE_AVAILABLE_HEAD(skb)))
@@ -2167,6 +2170,10 @@ static unsigned int mtk_hnat_nf_post_routing(
 	if (unlikely(!skb_hnat_is_hashed(skb)))
 		return 0;
 
+	/* Do not bind if pkt is fragmented */
+	if (ip_is_fragment(ip_hdr(skb)))
+		return 0;
+		
 	if (out->netdev_ops->ndo_flow_offload_check) {
 		out->netdev_ops->ndo_flow_offload_check(&hw_path);
 		out = (IS_GMAC1_MODE) ? hw_path.virt_dev : hw_path.dev;
@@ -2434,10 +2441,11 @@ static unsigned int
 mtk_hnat_ipv4_nf_local_out(void *priv, struct sk_buff *skb,
 			   const struct nf_hook_state *state)
 {
-	struct sk_buff *new_skb;
 	struct foe_entry *entry;
 	struct iphdr *iph;
 	if (!is_magic_tag_valid(skb))
+		return NF_ACCEPT;
+	if (unlikely(skb_headroom(skb) < FOE_INFO_LEN))
 		return NF_ACCEPT;
 	if (!skb_hnat_is_hashed(skb))
 		return NF_ACCEPT;
@@ -2447,16 +2455,6 @@ mtk_hnat_ipv4_nf_local_out(void *priv, struct sk_buff *skb,
 		return NF_ACCEPT;
 
 	entry = &hnat_priv->foe_table_cpu[skb_hnat_ppe(skb)][skb_hnat_entry(skb)];
-
-	if (unlikely(skb_headroom(skb) < FOE_INFO_LEN)) {
-		new_skb = skb_realloc_headroom(skb, FOE_INFO_LEN);
-		if (!new_skb) {
-			dev_info(hnat_priv->dev, "%s:drop\n", __func__);
-			return NF_DROP;
-		}
-		dev_kfree_skb(skb);
-		skb = new_skb;
-	}
 
 	/* Make the flow from local not be bound. */
 	iph = ip_hdr(skb);
@@ -2582,4 +2580,3 @@ int mtk_hqos_ptype_cb(struct sk_buff *skb, struct net_device *dev,
 
 	return 0;
 }
-
