@@ -2157,7 +2157,6 @@ static unsigned int mtk_hnat_nf_post_routing(
 						.virt_dev = (struct net_device*)out };
 	const struct net_device *arp_dev = out;
 	
-	if (skb->mark == 12345) return 0; 
 	
 
 	if (skb_hnat_alg(skb) || unlikely(!is_magic_tag_valid(skb) ||
@@ -2170,9 +2169,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 	if (unlikely(!skb_hnat_is_hashed(skb)))
 		return 0;
 
-	/* Do not bind if pkt is fragmented */
-	if (ip_is_fragment(ip_hdr(skb)))
-		return 0;
+	
 		
 	if (out->netdev_ops->ndo_flow_offload_check) {
 		out->netdev_ops->ndo_flow_offload_check(&hw_path);
