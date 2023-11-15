@@ -15,7 +15,7 @@ mediatek_setup_interfaces()
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6u@eth0" "5u@eth1"
 		;;
 	*gsw*)
-		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_set_interfaces_lan_wan "eth0 ra0 ra1 rai0 rai1" "eth1"
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
 		;;
@@ -24,6 +24,11 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth0 ra0 ra1 rai0 rai1" "eth1"
  		ucidef_add_switch "switch0" \
 				  "1:lan:4" "2:lan:3" "3:lan:2"  "4:wan" "6u@eth0" "5u@eth1"
+		;;
+	netcore,n60)
+		ucidef_set_interfaces_lan_wan "eth0 ra0 ra1 rai0 rai1" "eth1"
+ 		ucidef_add_switch "switch0" \
+				  "0:lan" "1:lan" "3:lan" "4:lan"  "6u@eth0"
 		;;
  	*)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 lan4 lan5" eth1
@@ -49,6 +54,7 @@ mediatek_setup_macs()
 
 	
 	wan_mac=$(mtd_get_mac_binary $part_name $wan_mac_offset)
+	lan_mac=$(macaddr_add "$wan_mac" 1)
 	
 	case $board in
  	xiaomi,redmi-router-ax6000|\

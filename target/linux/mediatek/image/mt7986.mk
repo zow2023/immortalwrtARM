@@ -105,16 +105,29 @@ define Device/mt7986a-ax6000-2500wan-gsw-spim-nand-rfb
   DEVICE_DTS := mt7986a-2500wan-gsw-spim-nand-rfb
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := mediatek,mt7986a-2500wan-gsw-spim-snand-rfb
-  UBINIZE_OPTS := -E 5
-  BLOCKSIZE := 128k
-  PAGESIZE := 2048
-  IMAGE_SIZE := 65536k
-  KERNEL_IN_UBI := 1
-  IMAGES += factory.bin
-  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-leds-ws2812b
+   UBINIZE_OPTS := -E 5
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+   KERNEL_IN_UBI := 1
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += mt7986a-ax6000-2500wan-gsw-spim-nand-rfb
+
+define Device/mt7986a-netcore-n60
+  DEVICE_VENDOR := MediaTek
+  DEVICE_MODEL := mt7986a-netcore-n60
+  DEVICE_DTS := mt7986a-netcore-n60
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := netcore,n60
+  DEVICE_PACKAGES :=luci-app-mtk l1profile wireless-tools kmod-conninfra kmod-warp kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm mtkhnat_util kmod-leds-ws2812b
+   UBINIZE_OPTS := -E 5
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+   KERNEL_IN_UBI := 1
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += mt7986a-netcore-n60
 
 define Device/mt7986a-ax6000-2500wan-sd-rfb
   DEVICE_VENDOR := MediaTek

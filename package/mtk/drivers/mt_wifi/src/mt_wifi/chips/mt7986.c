@@ -12157,7 +12157,11 @@ static VOID mt7986_chipCap_init(struct _RTMP_ADAPTER *pAd, RTMP_CHIP_CAP *chip_c
 	chip_cap->tkn_info.low_water_mark = 5;
 	chip_cap->tkn_info.hw_tx_token_cnt = 8192;
 #ifdef MEMORY_SHRINK
+#ifdef MEMORY_SHRINK_AGGRESS
+	chip_cap->tkn_info.token_rx_cnt = 4592;
+#else
 	chip_cap->tkn_info.token_rx_cnt = 12288;
+#endif	/* MEMORY_SHRINK_AGGRESS */
 #else
 	chip_cap->tkn_info.token_rx_cnt = 15360;
 #endif
