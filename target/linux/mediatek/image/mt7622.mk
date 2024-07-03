@@ -104,3 +104,31 @@ define Device/netgear_wax206
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += netgear_wax206
+
+define Device/linksys_e8450-ubi
+  DEVICE_VENDOR := Linksys
+  DEVICE_MODEL := E8450
+  DEVICE_VARIANT := UBI
+  DEVICE_ALT0_VENDOR := Belkin
+  DEVICE_ALT0_MODEL := RT3200
+  DEVICE_ALT0_VARIANT := UBI
+  DEVICE_DTS := mt7622-linksys-e8450-ubi
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-usb3
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBOOTENV_IN_UBI := 1
+  KERNEL_IN_UBI := 1
+  KERNEL := kernel-bin | gzip
+# recovery can also be used with stock firmware web-ui, hence the padding...
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 128k
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  IMAGES := sysupgrade.itb
+  IMAGE/sysupgrade.itb := append-kernel | fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := bl2 snand-1ddr
+  ARTIFACT/bl31-uboot.fip := bl31-uboot linksys_e8450
+endef
+TARGET_DEVICES += linksys_e8450-ubi
