@@ -7,6 +7,18 @@ platform_do_upgrade() {
 		#of eMMC and to the location of the kernel
 		get_image "$1" | dd of=/dev/mmcblk0 bs=2097152 seek=1 conv=fsync
 		;;
+        linksys,e8450-ubi)
+		CI_KERNPART="fit"
+		nand_do_upgrade "$1"
+		;;
+	linksys,e8450)
+		if grep -q mtdparts=slave /proc/cmdline; then
+			PART_NAME=firmware2
+		else
+			PART_NAME=firmware1
+		fi
+		default_do_upgrade "$1"
+		;;
 	mediatek,mt7622,ubi|\
 	netgear,wax206|\
  	xiaomi,redmi-router-ax6s)
