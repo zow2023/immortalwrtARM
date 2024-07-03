@@ -9,6 +9,14 @@ mediatek_setup_interfaces()
 	local board="$1"
 
 	case $board in
+        bananapi,bpi-r64|\
+	linksys,e8450|\
+	linksys,e8450-ubi|\
+	mediatek,mt7622-rfb1|\
+	mediatek,mt7622-rfb1-ubi|\
+	ruijie,rg-ew3200gx-pro)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
+		;;
 	bananapi,bpi-r64-rootdisk|\
 	bananapi,bpi-r64)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" wan
