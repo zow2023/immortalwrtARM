@@ -114,7 +114,7 @@ define Device/linksys_e8450-ubi
   DEVICE_ALT0_VARIANT := UBI
   DEVICE_DTS := mt7622-linksys-e8450-ubi
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7915e kmod-usb3
+  DEVICE_PACKAGES := kmod-usb3 luci-app-mtwifi l1profile wireless-tools  kmod-mt7622 kmod-mt_wifi ipv6helper kmod-mediatek_hnat bash autocore-arm luci-app-turboacc-mtk
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
