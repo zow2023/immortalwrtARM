@@ -43,6 +43,9 @@ mediatek_setup_interfaces()
 mediatek_setup_macs()
 {
 	local board="$1"
+        local lan_mac=""
+	local wan_mac=""
+	local label_mac=""
 
 	case $board in
 	xiaomi,redmi-router-ax6s)
